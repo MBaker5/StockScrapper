@@ -1,0 +1,10 @@
+{
+  "_id": "ObjectId(\"603e2df1b617b32e9c8cda84\")",
+  "symbol": "AMZN",
+  "company_name": "Amazon.com Inc.",
+  "date": "ISODate(\"2022-01-01T00:00:00Z\")",
+  "open": 3300.00,
+  "close": 3350.00,
+  "low": 3280.00,
+  "high": 3400.00 
+}
