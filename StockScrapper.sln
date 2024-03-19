@@ -7,9 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockScrapper", "StockScrap
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "App", "App\App.csproj", "{05F2B36E-4593-4EF5-B30F-F3CB821E0BBD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiScrapper", "ApiScrapper\ApiScrapper.csproj", "{362EFA19-D649-4482-B139-44E036B097D0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiScrapper", "ApiScrapper\ApiScrapper.csproj", "{362EFA19-D649-4482-B139-44E036B097D0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiNasda", "ApiNasda\ApiNasda.csproj", "{9D793E31-0A0F-4760-AC52-7E9CE41009BE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiNasda", "ApiNasda\ApiNasda.csproj", "{9D793E31-0A0F-4760-AC52-7E9CE41009BE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockScrapper_App", "StockScrapper_App\StockScrapper_App.csproj", "{6990AAF9-D617-4E03-94A7-A8D783EF7A67}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockScrapper_Database", "StockScrapper_Database\StockScrapper_Database.csproj", "{DF36D5B9-0F83-46FF-BCCF-273C9BA6F79C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +39,14 @@ Global
 		{9D793E31-0A0F-4760-AC52-7E9CE41009BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9D793E31-0A0F-4760-AC52-7E9CE41009BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9D793E31-0A0F-4760-AC52-7E9CE41009BE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6990AAF9-D617-4E03-94A7-A8D783EF7A67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6990AAF9-D617-4E03-94A7-A8D783EF7A67}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6990AAF9-D617-4E03-94A7-A8D783EF7A67}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6990AAF9-D617-4E03-94A7-A8D783EF7A67}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF36D5B9-0F83-46FF-BCCF-273C9BA6F79C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF36D5B9-0F83-46FF-BCCF-273C9BA6F79C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF36D5B9-0F83-46FF-BCCF-273C9BA6F79C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF36D5B9-0F83-46FF-BCCF-273C9BA6F79C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

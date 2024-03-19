@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using HtmlAgilityPack;
+using Microsoft.Extensions.Logging;
+using StockScrapper_App.Core;
+using StockScrapper_App.Services;
 
 namespace StockScrapper
 {
@@ -13,7 +16,8 @@ namespace StockScrapper
 				{
 					fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
 					fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
-				});
+				})
+				.Services.AddSingleton<IHtmlScrappService, HtmlScrappService>();
 
 #if DEBUG
 			builder.Logging.AddDebug();
