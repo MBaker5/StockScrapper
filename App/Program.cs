@@ -12,6 +12,9 @@ class Program
 
 	public static void ScrapYahoo()
 	{
+		Stopwatch stopwatch = new Stopwatch();
+		stopwatch.Start();
+
 		// Example URL for historical stock data on Yahoo Finance (AAPL)
 		string url = "https://finance.yahoo.com/quote/AAPL/history?p=AAPL";
 		HtmlWeb web = new HtmlWeb();
@@ -48,6 +51,9 @@ class Program
 		{
 			Console.WriteLine("Data not found or selectors need adjustment.");
 		}
+
+		stopwatch.Stop();
+		Console.WriteLine($"Czas wykonania operacji: {stopwatch.ElapsedMilliseconds} ms");
 	}
 	public static void ScrapNBP()
 	{
@@ -60,7 +66,9 @@ class Program
 		HtmlDocument doc = web.Load(url);
 
 		string tableSelector = "//table[@class='table table-hover table-striped table-bordered']";
-		string rowSelector = "//tbody//tr";
+		string rowSelector = "//table[@class='table table-hover table-striped table-bordered']//tbody//tr";
+
+
 
 		HtmlNode tableNode = doc.DocumentNode.SelectSingleNode(tableSelector);
 		HtmlNodeCollection? rowNodes = tableNode?.SelectNodes(rowSelector);
