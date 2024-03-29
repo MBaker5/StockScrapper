@@ -51,6 +51,64 @@ namespace StockScrapper_App.Services
 			stopwatch.Stop();
 			Console.WriteLine($"Czas wykonania operacji: {stopwatch.ElapsedMilliseconds} ms");
 		}
-	}
+
+
+        public List<CurrencyModel> ScrapYahoo(string companyShortcut)
+        {
+            List<CurrencyModel> currencyList = new List<CurrencyModel>();
+
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            // Example URL for historical stock data on Yahoo Finance (AAPL)
+            string url = $"https://finance.yahoo.com/quote/{companyShortcut}/history?p={companyShortcut}";
+            HtmlWeb web = new HtmlWeb();
+            HtmlDocument doc = web.Load(url);
+
+            // Replace these selectors with the actual ones from the Yahoo Finance page
+            string dateSelector = "//td[@class='Py(10px) Ta(start) Pend(10px)']"; // Selector for date
+            string openSelector = "//td[@class='Py(10px) Pstart(10px)']"; // Selector for open value
+            string highSelector = "//td[@class='Py(10px) Pstart(10px)']"; // Selector for high value
+            string lowSelector = "//td[@class='Py(10px) Pstart(10px)']"; // Selector for low value
+            string closeSelector = "//td[@class='Py(10px) Pstart(10px)']"; // Selector for close value
+
+            // Use the appropriate selectors to extract data
+            HtmlNodeCollection dateNodes = doc.DocumentNode.SelectNodes(dateSelector);
+            HtmlNodeCollection openNodes = doc.DocumentNode.SelectNodes(openSelector);
+            HtmlNodeCollection highNodes = doc.DocumentNode.SelectNodes(highSelector);
+            HtmlNodeCollection lowNodes = doc.DocumentNode.SelectNodes(lowSelector);
+            HtmlNodeCollection closeNodes = doc.DocumentNode.SelectNodes(closeSelector);
+
+            if (dateNodes != null && openNodes != null && highNodes != null && lowNodes != null && closeNodes != null)
+            {
+                for (int i = 0; i < dateNodes.Count; i++)
+                {
+                    string date = dateNodes[i].InnerText.Trim();
+                    string open = openNodes[i].InnerText.Trim();
+                    string high = highNodes[i].InnerText.Trim();
+                    string low = lowNodes[i].InnerText.Trim();
+                    string close = closeNodes[i].InnerText.Trim();
+
+                    // Creating a new CurrencyModel instance and populating it with scraped data
+                    CurrencyModel currency = new CurrencyModel();
+                    currency.CurrencyCode = date; // Example: Using date as currency code
+                    currency.ExchangeRate = open; // Example: Using open value as exchange rate
+
+                    currencyList.Add(currency);
+
+                    Console.WriteLine($"Date: {date}, Open: {open}, High: {high}, Low: {low}, Close: {close}");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Data not found or selectors need adjustment.");
+            }
+
+            stopwatch.Stop();
+            Console.WriteLine($"Czas wykonania operacji: {stopwatch.ElapsedMilliseconds} ms");
+
+            return currencyList;
+        }
+    }
 }
 

@@ -1,24 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="StockScrapper.MainPage"
-             Padding="20">
+             x:Class="StockScrapper.MainPage">
 
-    <StackLayout>
-        <Label Text="NBP Currency Exchange Rates" FontSize="Large" HorizontalOptions="Center" Margin="0,0,0,20"/>
-        <ListView x:Name="currencyListView">
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <ViewCell>
-                        <StackLayout>
-                            <Label Text="{Binding CurrencyCode}" FontSize="Medium"/>
-                            <Label Text="{Binding ExchangeRate}" FontSize="Small" TextColor="Gray"/>
-                        </StackLayout>
-                    </ViewCell>
-                </DataTemplate>
-            </ListView.ItemTemplate>
-        </ListView>
-    </StackLayout>
+    <ContentPage.MenuBarItems>
+        <MenuBarItem Text="Yahoo Scrapp">
+            <MenuFlyoutItem Text="Yahoo" Clicked="NBPExchangeRate_Clicked"/>
+        </MenuBarItem>
+    </ContentPage.MenuBarItems>
 
+    <Button Text="Yahoo" Clicked="btnYahooScrapp_Clicked"/>
 </ContentPage>
 

@@ -66,4 +66,16 @@
 	  <ProjectReference Include="..\StockScrapper_App\StockScrapper_App.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Compile Update="Panels\NBPExchangeRate.xaml.cs">
+	    <DependentUpon>NBPExchangeRate.xaml</DependentUpon>
+	  </Compile>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiXaml Update="Panels\NBPExchangeRate.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
+
 </Project>

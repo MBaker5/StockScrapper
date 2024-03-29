@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:StockScrapper.Models"
+             x:Class="StockScrapper.Panels.NBPExchangeRate"
+             Title="NBPExchangeRate">
+
+    <StackLayout>
+        <Label Text="NBP Currency Exchange Rates" FontSize="Large" HorizontalOptions="Center" Margin="0,0,0,20"/>
+        
+        <Picker x:Name="companyComboBox"
+        SelectedItem="{Binding SelectedCompany}"
+        ItemsSource="{Binding CompanyShortcuts}"
+       />
+
+        <Button Text="Scrap" Clicked="ScrapButton_Clicked" />
+
+        <ListView x:Name="currencyListView" ItemsSource="{Binding CurrencyList}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <StackLayout>
+                            <Label Text="{Binding CurrencyCode}" FontSize="Medium"/>
+                            <Label Text="{Binding ExchangeRate}" FontSize="Small" TextColor="Gray"/>
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackLayout>
+</ContentPage>
