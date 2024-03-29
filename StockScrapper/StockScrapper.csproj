@@ -67,13 +67,19 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Compile Update="Panels\NBPExchangeRate.xaml.cs">
-	    <DependentUpon>NBPExchangeRate.xaml</DependentUpon>
+	  <Compile Update="Panels\CurrencyStockPrice.xaml.cs">
+	    <DependentUpon>CurrencyStockPrice.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Panels\YahooStockPrice.xaml.cs">
+	    <DependentUpon>YahooStockPrice.xaml</DependentUpon>
 	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
-	  <MauiXaml Update="Panels\NBPExchangeRate.xaml">
+	  <MauiXaml Update="Panels\CurrencyStockPrice.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Panels\YahooStockPrice.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>

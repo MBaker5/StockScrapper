@@ -19,12 +19,12 @@ namespace StockScrapper
 
         private async void NBPExchangeRate_Clicked(object sender, EventArgs e)
         {
-            await Navigation.PushAsync(new NBPExchangeRate());
+            await Navigation.PushAsync(new YahooStockPrice());
         }
 
         private void btnYahooScrapp_Clicked(object sender, EventArgs e)
         {
-            Navigation.PushAsync(new NBPExchangeRate());
+            Navigation.PushAsync(new YahooStockPrice());
         }
     }
 

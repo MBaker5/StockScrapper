@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace StockScrapper.Panels;
 
-public partial class NBPExchangeRate : ContentPage
+public partial class YahooStockPrice : ContentPage
 {
     private readonly IHtmlScrappService _scrapp;
 
@@ -14,7 +14,7 @@ public partial class NBPExchangeRate : ContentPage
     public CompanyShortcutEnum SelectedCompany { get; set; }
     public CompanyShortcutEnum[] CompanyShortcuts => (CompanyShortcutEnum[])Enum.GetValues(typeof(CompanyShortcutEnum));
 
-    public NBPExchangeRate()
+    public YahooStockPrice()
     {
         try
         {
