@@ -13,6 +13,7 @@ namespace StockScrapper
 
 		public ObservableCollection<CurrencyData> CurrencyList { get; set; } = new ObservableCollection<CurrencyData>();
 
+
 		int count = 0;
 
 		public MainPage()
