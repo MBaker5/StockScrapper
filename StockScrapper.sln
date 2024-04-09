@@ -11,9 +11,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiScrapper", "ApiScrapper\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiNasda", "ApiNasda\ApiNasda.csproj", "{9D793E31-0A0F-4760-AC52-7E9CE41009BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockScrapper_App", "StockScrapper_App\StockScrapper_App.csproj", "{6990AAF9-D617-4E03-94A7-A8D783EF7A67}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockScrapper_App", "StockScrapper_App\StockScrapper_App.csproj", "{6990AAF9-D617-4E03-94A7-A8D783EF7A67}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StockScrapper_Database", "StockScrapper_Database\StockScrapper_Database.csproj", "{DF36D5B9-0F83-46FF-BCCF-273C9BA6F79C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "StockScrapper_Database", "StockScrapper_Database\StockScrapper_Database.csproj", "{DF36D5B9-0F83-46FF-BCCF-273C9BA6F79C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

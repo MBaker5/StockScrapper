@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:charts="clr-namespace:Microcharts.Maui;assembly=Microcharts.Maui"
              xmlns:local="clr-namespace:StockScrapper.Models"
              x:Class="StockScrapper.Panels.YahooStockPrice"
              Title="NBPExchangeRate">
@@ -12,7 +13,7 @@
 
         <Button Text="Scrap" Clicked="ScrapButton_Clicked" />
 
-        <ListView x:Name="currencyListView" ItemsSource="{Binding CurrencyList}">
+        <!--<ListView x:Name="currencyListView" ItemsSource="{Binding CurrencyList}">
             <ListView.ItemTemplate>
                 
                 <DataTemplate>
@@ -25,6 +26,8 @@
                 </DataTemplate>
                 
             </ListView.ItemTemplate>
-        </ListView>
+        </ListView>-->
+
+        <charts:ChartView x:Name="candlestickChart" HeightRequest="400" WidthRequest="1200"/>
     </StackLayout>
 </ContentPage>

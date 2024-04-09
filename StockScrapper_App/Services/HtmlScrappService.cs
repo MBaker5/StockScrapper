@@ -53,9 +53,9 @@ namespace StockScrapper_App.Services
 		}
 
 
-        public List<CurrencyModel> ScrapYahoo(string companyShortcut)
+        public List<StockData> ScrapYahoo(string companyShortcut)
         {
-            List<CurrencyModel> currencyList = new List<CurrencyModel>();
+            List<StockData> stockDataList = new List<StockData>();
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -90,11 +90,14 @@ namespace StockScrapper_App.Services
                     string close = closeNodes[i].InnerText.Trim();
 
                     // Creating a new CurrencyModel instance and populating it with scraped data
-                    CurrencyModel currency = new CurrencyModel();
-                    currency.CurrencyCode = date; // Example: Using date as currency code
-                    currency.ExchangeRate = open; // Example: Using open value as exchange rate
+                    StockData stock = new StockData();
+					stock.Date = date;
+					stock.OpenPrice = open;
+					stock.HighPrice = high;
+					stock.LowPrice = low;
+					stock.ClosePrice = close;
 
-                    currencyList.Add(currency);
+					stockDataList.Add(stock);
 
                     Console.WriteLine($"Date: {date}, Open: {open}, High: {high}, Low: {low}, Close: {close}");
                 }
@@ -107,7 +110,7 @@ namespace StockScrapper_App.Services
             stopwatch.Stop();
             Console.WriteLine($"Czas wykonania operacji: {stopwatch.ElapsedMilliseconds} ms");
 
-            return currencyList;
+            return stockDataList;
         }
     }
 }

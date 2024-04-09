@@ -57,17 +57,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microcharts.Maui" Version="1.0.0" />
-		<PackageReference Include="Microsoft.Maui.Controls" Version="8.0.14" />
-		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="8.0.14" />
+		<PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
+		<PackageReference Include="Microsoft.Maui.Controls.Compatibility" Version="$(MauiVersion)" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="8.0.0" />
 		<PackageReference Include="SkiaSharp" Version="2.88.7" />
-		<PackageReference Include="SkiaSharp.Views.Desktop.Common" Version="2.88.7" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <ProjectReference Include="..\StockScrapper_App\StockScrapper_App.csproj" />
-	  <ProjectReference Include="..\StockScrapper_Database\StockScrapper_Database.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -86,10 +83,6 @@
 	  <MauiXaml Update="Panels\YahooStockPrice.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	</ItemGroup>
-
-	<ItemGroup>
-	  <Folder Include="Controls\" />
 	</ItemGroup>
 
 </Project>

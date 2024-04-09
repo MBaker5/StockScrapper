@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using Microcharts.Maui;
 using Microsoft.Extensions.Logging;
 using StockScrapper_App.Core;
 using StockScrapper_App.Services;
@@ -12,6 +13,7 @@ namespace StockScrapper
 			var builder = MauiApp.CreateBuilder();
 			builder
 				.UseMauiApp<App>()
+				.UseMicrocharts()
 				.ConfigureFonts(fonts =>
 				{
 					fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
