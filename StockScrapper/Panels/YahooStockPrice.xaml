@@ -7,9 +7,12 @@
              Title="NBPExchangeRate">
 
     <StackLayout>
-        <Label Text="NBP Currency Exchange Rates" FontSize="Large" HorizontalOptions="Center" Margin="0,0,0,20"/>
+        <Label Text="Yahoo scrapping" FontSize="Large" HorizontalOptions="Center" Margin="0,0,0,20"/>
         
         <Picker x:Name="companyComboBox" SelectedItem="{Binding SelectedCompany}" ItemsSource="{Binding CompanyShortcuts}"/>
+
+        <DatePicker x:Name="dpEndDateRange" MinimumDate="01/12/1980" MaximumDate="{Binding CurrentDate}"/>
+        <DatePicker x:Name="dpStartDateRange" MinimumDate="01/12/1980" MaximumDate="{Binding CurrentDate}"/>
 
         <Button Text="Scrap" Clicked="ScrapButton_Clicked" />
 

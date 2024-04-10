@@ -18,14 +18,31 @@ public partial class YahooStockPrice : ContentPage
     public CompanyShortcutEnum SelectedCompany { get; set; }
     public CompanyShortcutEnum[] CompanyShortcuts => (CompanyShortcutEnum[])Enum.GetValues(typeof(CompanyShortcutEnum));
 
-    public YahooStockPrice()
+	private DateTime _currentDate;
+	public DateTime CurrentDate
+	{
+		get { return _currentDate; }
+		set
+		{
+			if (_currentDate != value)
+			{
+				_currentDate = value;
+				OnPropertyChanged(nameof(CurrentDate));
+			}
+		}
+	}
+
+
+	public YahooStockPrice()
     {
         try
         {
             InitializeComponent();
             BindingContext = this;
             _scrapp = new HtmlScrappService();
-        }
+			_currentDate = DateTime.Now;
+
+		}
         catch (Exception ex)
         {
             Debug.WriteLine(ex);

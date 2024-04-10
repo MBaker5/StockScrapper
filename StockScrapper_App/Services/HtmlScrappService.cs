@@ -60,19 +60,16 @@ namespace StockScrapper_App.Services
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            // Example URL for historical stock data on Yahoo Finance (AAPL)
             string url = $"https://finance.yahoo.com/quote/{companyShortcut}/history?p={companyShortcut}";
             HtmlWeb web = new HtmlWeb();
             HtmlDocument doc = web.Load(url);
 
-            // Replace these selectors with the actual ones from the Yahoo Finance page
             string dateSelector = "//td[@class='Py(10px) Ta(start) Pend(10px)']"; // Selector for date
             string openSelector = "//td[@class='Py(10px) Pstart(10px)']"; // Selector for open value
             string highSelector = "//td[@class='Py(10px) Pstart(10px)']"; // Selector for high value
             string lowSelector = "//td[@class='Py(10px) Pstart(10px)']"; // Selector for low value
             string closeSelector = "//td[@class='Py(10px) Pstart(10px)']"; // Selector for close value
 
-            // Use the appropriate selectors to extract data
             HtmlNodeCollection dateNodes = doc.DocumentNode.SelectNodes(dateSelector);
             HtmlNodeCollection openNodes = doc.DocumentNode.SelectNodes(openSelector);
             HtmlNodeCollection highNodes = doc.DocumentNode.SelectNodes(highSelector);
@@ -112,6 +109,14 @@ namespace StockScrapper_App.Services
 
             return stockDataList;
         }
-    }
+
+		static string ConstructUrl(DateTime startDate, DateTime endDate)
+		{
+			long period1 = (long)(startDate.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+			long period2 = (long)(endDate.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+
+			return $"https://finance.yahoo.com/quote/AAPL/history?period1={period1}&period2={period2}&interval=1d&filter=history&frequency=1d&includeAdjustedClose=true";
+		}
+	}
 }
 
