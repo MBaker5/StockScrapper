@@ -7,9 +7,27 @@
              x:Class="StockScrapper.Panels.YahooStockPrice"
              Title="NBPExchangeRate">
 
+    <ContentPage.BindingContext>
+        <local:YahooStockPriceViewModel />
+    </ContentPage.BindingContext>
+
     <StackLayout>
-        <Label Text="Yahoo scrapping" FontSize="Large" HorizontalOptions="Center" Margin="0,0,0,20"/>
+        <!--<ListView x:Name="currencyListView" ItemsSource="{Binding CurrencyList}">
+    <ListView.ItemTemplate>
         
+        <DataTemplate>
+            <ViewCell>
+                <StackLayout>
+                    <Label Text="{Binding CurrencyCode}" FontSize="Medium"/>
+                    <Label Text="{Binding ExchangeRate}" FontSize="Small" TextColor="Gray"/>
+                </StackLayout>
+            </ViewCell>
+        </DataTemplate>
+        
+    </ListView.ItemTemplate>
+</ListView>-->
+        <Label Text="Yahoo scrapping" FontSize="Large" HorizontalOptions="Center" Margin="0,0,0,20"/>
+
         <Picker x:Name="companyComboBox" SelectedItem="{Binding SelectedCompany}" ItemsSource="{Binding CompanyShortcuts}"/>
 
         <DatePicker x:Name="dpEndDateRange" MinimumDate="01/12/1980" MaximumDate="{Binding CurrentDate}"/>
@@ -17,21 +35,7 @@
 
         <Button Text="Scrap" Clicked="ScrapButton_Clicked" />
 
-        <!--<ListView x:Name="currencyListView" ItemsSource="{Binding CurrencyList}">
-            <ListView.ItemTemplate>
-                
-                <DataTemplate>
-                    <ViewCell>
-                        <StackLayout>
-                            <Label Text="{Binding CurrencyCode}" FontSize="Medium"/>
-                            <Label Text="{Binding ExchangeRate}" FontSize="Small" TextColor="Gray"/>
-                        </StackLayout>
-                    </ViewCell>
-                </DataTemplate>
-                
-            </ListView.ItemTemplate>
-        </ListView>-->
-
-        <lvc:CartesianChart x:Name="candlestickChart" HeightRequest="400" WidthRequest="1200"/>
+        <lvc:CartesianChart x:Name="candlestickChart" HeightRequest="400" WidthRequest="1200" Series="{Binding Series}" XAxes="{Binding XAxsis}" ZoomMode="Both"/>
     </StackLayout>
 </ContentPage>
+        
