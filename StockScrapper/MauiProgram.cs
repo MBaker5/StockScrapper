@@ -3,6 +3,7 @@ using Microcharts.Maui;
 using Microsoft.Extensions.Logging;
 using StockScrapper_App.Core;
 using StockScrapper_App.Services;
+using SkiaSharp.Views.Maui.Controls.Hosting;
 
 namespace StockScrapper
 {
@@ -13,6 +14,7 @@ namespace StockScrapper
 			var builder = MauiApp.CreateBuilder();
 			builder
 				.UseMauiApp<App>()
+				.UseSkiaSharp(true)
 				.UseMicrocharts()
 				.ConfigureFonts(fonts =>
 				{

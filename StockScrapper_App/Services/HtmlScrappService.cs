@@ -60,17 +60,17 @@ namespace StockScrapper_App.Services
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            string url = $"https://finance.yahoo.com/quote/{companyShortcut}/history?p={companyShortcut}";
+            string url = $"https://finance.yahoo.com/quote/{companyShortcut}/history";
             HtmlWeb web = new HtmlWeb();
             HtmlDocument doc = web.Load(url);
 
-            string dateSelector = "//td[@class='Py(10px) Ta(start) Pend(10px)']"; // Selector for date
-            string openSelector = "//td[@class='Py(10px) Pstart(10px)']"; // Selector for open value
-            string highSelector = "//td[@class='Py(10px) Pstart(10px)']"; // Selector for high value
-            string lowSelector = "//td[@class='Py(10px) Pstart(10px)']"; // Selector for low value
-            string closeSelector = "//td[@class='Py(10px) Pstart(10px)']"; // Selector for close value
+			string dateSelector = "//tr[@class='BdT Bdc($seperatorColor) Ta(end) Fz(s) Whs(nw)']/td[1]"; // Selector for date
+			string openSelector = "//tr[@class='BdT Bdc($seperatorColor) Ta(end) Fz(s) Whs(nw)']/td[2]"; // Selector for open value
+			string highSelector = "//tr[@class='BdT Bdc($seperatorColor) Ta(end) Fz(s) Whs(nw)']/td[3]"; // Selector for high value
+			string lowSelector = "//tr[@class='BdT Bdc($seperatorColor) Ta(end) Fz(s) Whs(nw)']/td[4]"; // Selector for low value
+			string closeSelector = "//tr[@class='BdT Bdc($seperatorColor) Ta(end) Fz(s) Whs(nw)']/td[5]"; // Selector for close value
 
-            HtmlNodeCollection dateNodes = doc.DocumentNode.SelectNodes(dateSelector);
+			HtmlNodeCollection dateNodes = doc.DocumentNode.SelectNodes(dateSelector);
             HtmlNodeCollection openNodes = doc.DocumentNode.SelectNodes(openSelector);
             HtmlNodeCollection highNodes = doc.DocumentNode.SelectNodes(highSelector);
             HtmlNodeCollection lowNodes = doc.DocumentNode.SelectNodes(lowSelector);
@@ -78,7 +78,7 @@ namespace StockScrapper_App.Services
 
             if (dateNodes != null && openNodes != null && highNodes != null && lowNodes != null && closeNodes != null)
             {
-                for (int i = 0; i < dateNodes.Count; i++)
+                for (int i = 0; i < dateNodes.Count -45; i++)
                 {
                     string date = dateNodes[i].InnerText.Trim();
                     string open = openNodes[i].InnerText.Trim();
