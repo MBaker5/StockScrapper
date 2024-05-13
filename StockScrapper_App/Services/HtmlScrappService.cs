@@ -64,11 +64,12 @@ namespace StockScrapper_App.Services
             HtmlWeb web = new HtmlWeb();
             HtmlDocument doc = web.Load(url);
 
-			string dateSelector = "//tr[@class='svelte-ta1t6m']/td[1]"; // Selector for date
-			string openSelector = "//tr[@class='svelte-ta1t6m']/td[2]"; // Selector for open value
-			string highSelector = "//tr[@class='svelte-ta1t6m']/td[3]"; // Selector for high value
-			string lowSelector = "//tr[@class='svelte-ta1t6m']/td[4]"; // Selector for low value
-			string closeSelector = "//tr[@class='svelte-ta1t6m']/td[5]"; // Selector for close value
+			string dateSelector = "//tr[@class='svelte-ewueuo']/td[1]"; // Selector for date
+			string openSelector = "//tr[@class='svelte-ewueuo']/td[2]"; // Selector for open value
+			string highSelector = "//tr[@class='svelte-ewueuo']/td[3]"; // Selector for high value
+			string lowSelector = "//tr[@class='svelte-ewueuo']/td[4]"; // Selector for low value
+			string closeSelector = "//tr[@class='svelte-ewueuo']/td[5]"; // Selector for close value
+
 
 			HtmlNodeCollection dateNodes = doc.DocumentNode.SelectNodes(dateSelector);
             HtmlNodeCollection openNodes = doc.DocumentNode.SelectNodes(openSelector);
@@ -78,7 +79,7 @@ namespace StockScrapper_App.Services
 
             if (dateNodes != null && openNodes != null && highNodes != null && lowNodes != null && closeNodes != null)
             {
-                for (int i = 0; i < dateNodes.Count - 240; i++)
+                for (int i = 0; i < dateNodes.Count - 200; i++)
                 {
                     string date = dateNodes[i].InnerText.Trim();
                     string open = openNodes[i].InnerText.Trim();

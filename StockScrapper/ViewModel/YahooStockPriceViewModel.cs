@@ -24,6 +24,9 @@ namespace StockScrapper.Panels
 		public ObservableCollection<StockData> StockDataList { get; set; } = new ObservableCollection<StockData>();
 		public CompanyShortcutEnum SelectedCompany { get; set; }
 		public CompanyShortcutEnum[] CompanyShortcuts => (CompanyShortcutEnum[])Enum.GetValues(typeof(CompanyShortcutEnum));
+		private DateTime _minDate = DateTime.MinValue;
+		private DateTime _maxDate = DateTime.MaxValue;
+		private List<string> dateLabelers = new List<string>();
 
 		private ISeries[] _series;
 		public ISeries[] Series
@@ -82,6 +85,8 @@ namespace StockScrapper.Panels
 			var stockList = _scrapp.ScrapYahoo(companyShortcut);
 			var entries = new List<FinancialPoint>();
 
+			
+
 			foreach (var s in stockList)
 			{
 				DateTime dateTime = DateTime.Parse(s.Date);
@@ -111,32 +116,56 @@ namespace StockScrapper.Panels
 					HighPrice = highPrice
 				};
 				StockDataList.Add(stockData);
+
+				
+			}
+
+			List<string> dateLabels = new List<string>();
+
+			// Iterate through your date range and populate the list with formatted dates
+			DateTime currentDate = StockDataList.Min(x => x.Date);
+			while (currentDate <= StockDataList.Max(x => x.Date))
+			{
+				// Skip Saturdays and Sundays
+				if (currentDate.DayOfWeek != DayOfWeek.Saturday && currentDate.DayOfWeek != DayOfWeek.Sunday)
+				{
+					// Format the date label
+					dateLabels.Add(currentDate.ToString("yyyy-MM-dd"));
+				}
+
+				// Move to the next day
+				currentDate = currentDate.AddDays(1);
 			}
 
 			Series = new ISeries[]
 			{
 				new CandlesticksSeries<FinancialPoint>
 				{
+
 					UpFill = new SolidColorPaint(SKColors.Blue),
+					//UpStroke = new SolidColorPaint(SKColors.CornflowerBlue) { StrokeThickness = 5 },
 					DownFill = new SolidColorPaint(SKColors.Red),
+					//DownStroke = new SolidColorPaint(SKColors.Orange) { StrokeThickness = 5 },
 					Values = entries
 				}
 			};
-
 
 			XAxsis = new Axis[]
 			{
 				new Axis
 				{
-					LabelsRotation = 60,
-					Labeler = value => new DateTime((long)value).ToString("yyyy MMM dd"),
-				// set the unit width of the axis to "days"
-				// since our X axis is of type date time and 
-				// the interval between our points is in days
 					UnitWidth = TimeSpan.FromDays(1).Ticks,
+					//Labels = dateLabels,
+					LabelsRotation = 60,
+					Labeler = value =>
+					{
+						DateTime dateTime = new DateTime((long)value);
+						return dateTime.ToString("dd/M/yyyy");
+					},
+					MinStep = 1,
 				}
 			};
-			
+
 		}
 	}
 }
