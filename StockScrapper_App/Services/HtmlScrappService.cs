@@ -7,53 +7,93 @@ namespace StockScrapper_App.Services
 {
     public class HtmlScrappService : IHtmlScrappService
     {
+		public async Task<List<string>> GetMostActiveOnMarketAsync()
+		{
+			string url = "https://finance.yahoo.com/most-active/?offset=25&count=25";
+
+			var httpClient = new HttpClient();
+			var symbols = new List<string>();
+
+			try
+			{
+				var html = await httpClient.GetStringAsync(url);
+
+				var htmlDoc = new HtmlDocument();
+				htmlDoc.LoadHtml(html);
+
+				var nodes = htmlDoc.DocumentNode.SelectNodes("//tr[@class='simpTblRow Bgc($hoverBgColor):h BdB Bdbc($seperatorColor) Bdbc($tableBorderBlue):h H(32px) Bgc($lv2BgColor) ']//td[@aria-label='Symbol']//a");
+
+				if (nodes != null)
+				{
+					foreach (var node in nodes)
+					{
+						var symbol = node.InnerText;
+						symbols.Add(symbol);
+					}
+				}
+				else
+				{
+					throw new InvalidOperationException("No symbols found!");
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"An error occurred: {ex.Message}");
+			}
+
+			return symbols;
+		}
+
 		public List<CurrencyModel> GetDataFromNBP()
 		{
 			string url = "https://nbp.pl/statystyka-i-sprawozdawczosc/kursy/tabela-a/";
 			HtmlWeb web = new HtmlWeb();
 			List<CurrencyModel> currencyList = new List<CurrencyModel>();
+			int maxRetries = 3;
 
 			Stopwatch stopwatch = new Stopwatch();
 			stopwatch.Start();
 
-			HtmlDocument doc = web.Load(url);
-
-			string tableSelector = "//table[@class='table table-hover table-striped table-bordered']";
-			string rowSelector = "//table[@class='table table-hover table-striped table-bordered']//tbody//tr";
-
-			HtmlNode tableNode = doc.DocumentNode.SelectSingleNode(tableSelector);
-			HtmlNodeCollection? rowNodes = tableNode?.SelectNodes(rowSelector);
-
-			if (tableNode != null && rowNodes != null)
+			for (int attempt = 0; attempt < maxRetries; attempt++)
 			{
-				foreach (var rowNode in rowNodes)
+				HtmlDocument doc = web.Load(url);
+
+				string tableSelector = "//table[@class='table table-hover table-striped table-bordered']";
+				string rowSelector = "//table[@class='table table-hover table-striped table-bordered']//tbody//tr";
+
+				HtmlNode tableNode = doc.DocumentNode.SelectSingleNode(tableSelector);
+				HtmlNodeCollection? rowNodes = tableNode?.SelectNodes(rowSelector);
+
+				if (tableNode != null && rowNodes != null)
 				{
-					HtmlNodeCollection cellNodes = rowNode.SelectNodes("td");
-
-					if (cellNodes != null && cellNodes.Count == 3)
+					foreach (var rowNode in rowNodes)
 					{
-						
-						string currencyCode = cellNodes[1].InnerText.Trim();
-						string exchangeRate = cellNodes[2].InnerText.Trim();
+						HtmlNodeCollection cellNodes = rowNode.SelectNodes("td");
 
-						currencyList.Add(new CurrencyModel { CurrencyCode = currencyCode, ExchangeRate = exchangeRate });
+						if (cellNodes != null && cellNodes.Count == 3)
+						{
+							string currencyName = cellNodes[0].InnerText.Trim();
+							string currencyCode = cellNodes[1].InnerText.Trim();
+							string exchangeRate = cellNodes[2].InnerText.Trim();
+
+							currencyList.Add(new CurrencyModel { CurrencyName = currencyName, CurrencyCode = currencyCode, ExchangeRate = exchangeRate });
+						}
 					}
+
+					stopwatch.Stop();
+					Console.WriteLine($"Operation completed in: {stopwatch.ElapsedMilliseconds} ms");
+					return currencyList;
 				}
 
-				return currencyList;
-			}
-			else
-			{
-				Console.WriteLine("Data not found or selectors need adjustment.");
-				return null;
+				Console.WriteLine($"Attempt {attempt + 1} failed. Retrying...");
 			}
 
-			stopwatch.Stop();
-			Console.WriteLine($"Czas wykonania operacji: {stopwatch.ElapsedMilliseconds} ms");
+			Console.WriteLine("Failed to fetch data after multiple attempts.");
+			return null;
 		}
 
 
-        public List<StockData> ScrapYahoo(string companyShortcut)
+		public List<StockData> ScrapYahoo(string companyShortcut)
         {
             List<StockData> stockDataList = new List<StockData>();
 
@@ -79,28 +119,35 @@ namespace StockScrapper_App.Services
 
             if (dateNodes != null && openNodes != null && highNodes != null && lowNodes != null && closeNodes != null)
             {
-                for (int i = 0; i < dateNodes.Count - 200; i++)
-                {
-                    string date = dateNodes[i].InnerText.Trim();
-                    string open = openNodes[i].InnerText.Trim();
-                    string high = highNodes[i].InnerText.Trim();
-                    string low = lowNodes[i].InnerText.Trim();
-                    string close = closeNodes[i].InnerText.Trim();
+				// Ensure all collections have the same count, or use the minimum count
+				int minCount = Math.Min(dateNodes.Count, Math.Min(openNodes.Count, Math.Min(highNodes.Count, Math.Min(lowNodes.Count, closeNodes.Count))));
 
-                    // Creating a new CurrencyModel instance and populating it with scraped data
-                    StockData stock = new StockData();
-					stock.Date = date;
-					stock.OpenPrice = open;
-					stock.HighPrice = high;
-					stock.LowPrice = low;
-					stock.ClosePrice = close;
+				Console.WriteLine($"dateNodes.Count: {dateNodes.Count}, openNodes.Count: {openNodes.Count}, highNodes.Count: {highNodes.Count}, lowNodes.Count: {lowNodes.Count}, closeNodes.Count: {closeNodes.Count}");
+
+				for (int i = 0; i < minCount; i++)
+				{
+					string date = dateNodes[i].InnerText.Trim();
+					string open = openNodes[i].InnerText.Trim();
+					string high = highNodes[i].InnerText.Trim();
+					string low = lowNodes[i].InnerText.Trim();
+					string close = closeNodes[i].InnerText.Trim();
+
+					StockData stock = new StockData
+					{
+						Date = date,
+						OpenPrice = open,
+						HighPrice = high,
+						LowPrice = low,
+						ClosePrice = close
+					};
 
 					stockDataList.Add(stock);
 
-                    Console.WriteLine($"Date: {date}, Open: {open}, High: {high}, Low: {low}, Close: {close}");
-                }
-            }
-            else
+					Console.WriteLine($"Date: {date}, Open: {open}, High: {high}, Low: {low}, Close: {close}");
+				}
+
+			}
+			else
             {
                 Console.WriteLine("Data not found or selectors need adjustment.");
             }

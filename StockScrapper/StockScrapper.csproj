@@ -75,6 +75,9 @@
 	  <Compile Update="Panels\CurrencyStockPrice.xaml.cs">
 	    <DependentUpon>CurrencyStockPrice.xaml</DependentUpon>
 	  </Compile>
+	  <Compile Update="Panels\Tabs\YahooStockPriceChartsTab.xaml.cs">
+	    <DependentUpon>YahooStockPriceChartsTab.xaml</DependentUpon>
+	  </Compile>
 	  <Compile Update="Panels\YahooStockPrice.xaml.cs">
 	    <DependentUpon>YahooStockPrice.xaml</DependentUpon>
 	  </Compile>
@@ -82,6 +85,9 @@
 
 	<ItemGroup>
 	  <MauiXaml Update="Panels\CurrencyStockPrice.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Panels\Tabs\YahooStockPriceChartsTab.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Panels\YahooStockPrice.xaml">

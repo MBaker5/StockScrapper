@@ -26,6 +26,12 @@ namespace StockScrapper
         {
             Navigation.PushAsync(new YahooStockPrice());
         }
-    }
+
+        private void btnCurrencyData_Clicked(object sender, EventArgs e)
+        {
+			Navigation.PushAsync(new CurrencyStockPrice());
+		}
+
+	}
 
 }

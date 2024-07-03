@@ -2,6 +2,7 @@
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
+using LiveChartsCore.SkiaSharpView.Painting.Effects;
 using Microsoft.Maui.Controls;
 using SkiaSharp;
 using StockScrapper.Models;
@@ -55,6 +56,20 @@ namespace StockScrapper.Panels
 			}
 		}
 
+		private Axis[] _yaxsis;
+		public Axis[] YAxsis
+		{
+			get => _yaxsis;
+			set
+			{
+				if (_yaxsis != value)
+				{
+					_yaxsis = value;
+					OnPropertyChanged(nameof(YAxsis));
+				}
+			}
+		}
+
 		private DateTime _currentDate;
 		public DateTime CurrentDate
 		{
@@ -85,8 +100,6 @@ namespace StockScrapper.Panels
 			var stockList = _scrapp.ScrapYahoo(companyShortcut);
 			var entries = new List<FinancialPoint>();
 
-			
-
 			foreach (var s in stockList)
 			{
 				DateTime dateTime = DateTime.Parse(s.Date);
@@ -116,13 +129,10 @@ namespace StockScrapper.Panels
 					HighPrice = highPrice
 				};
 				StockDataList.Add(stockData);
-
-				
 			}
 
 			List<string> dateLabels = new List<string>();
 
-			// Iterate through your date range and populate the list with formatted dates
 			DateTime currentDate = StockDataList.Min(x => x.Date);
 			while (currentDate <= StockDataList.Max(x => x.Date))
 			{
@@ -137,15 +147,16 @@ namespace StockScrapper.Panels
 				currentDate = currentDate.AddDays(1);
 			}
 
+			Debug.WriteLine("xd");
 			Series = new ISeries[]
 			{
 				new CandlesticksSeries<FinancialPoint>
 				{
 
 					UpFill = new SolidColorPaint(SKColors.Blue),
-					//UpStroke = new SolidColorPaint(SKColors.CornflowerBlue) { StrokeThickness = 5 },
+					UpStroke = new SolidColorPaint(SKColors.CornflowerBlue) { StrokeThickness = 0 },
 					DownFill = new SolidColorPaint(SKColors.Red),
-					//DownStroke = new SolidColorPaint(SKColors.Orange) { StrokeThickness = 5 },
+					DownStroke = new SolidColorPaint(SKColors.Orange) { StrokeThickness = 0 },
 					Values = entries
 				}
 			};
@@ -163,6 +174,21 @@ namespace StockScrapper.Panels
 						return dateTime.ToString("dd/M/yyyy");
 					},
 					MinStep = 1,
+					SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray)
+					{
+						StrokeThickness = 0.5f,
+						PathEffect = new DashEffect(new float[] { 3, 3 }),
+					},
+					//SubseparatorsPaint = new SolidColorPaint(SKColors.Blue)
+					SeparatorsAtCenter = true,
+					ShowSeparatorLines = true,
+				}
+			};
+			YAxsis = new Axis[]
+			{
+				new Axis
+				{
+					Labeler = Labelers.Currency
 				}
 			};
 

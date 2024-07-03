@@ -11,6 +11,7 @@ namespace StockScrapper.Models
         AAPL,
         AMZN,
         GOOG,
-        MSFT
+        MSFT,
+
     }
 }

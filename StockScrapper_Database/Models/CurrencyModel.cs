@@ -8,6 +8,16 @@ namespace StockScrapper_Database.Models
 {
 	public class CurrencyModel
 	{
+		private string _currencyName;
+		public string CurrencyName
+		{
+			get { return _currencyName; }
+			set
+			{
+				_currencyName = value;
+			}
+		}
+
 		private string _currencyCode;
 		public string CurrencyCode
 		{

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Maui;assembly=LiveChartsCore.SkiaSharpView.Maui"
+             xmlns:lvcore="clr-namespace:LiveChartsCore;assembly=LiveChartsCore"
+             xmlns:local="clr-namespace:StockScrapper.Panels"
+             x:Class="StockScrapper.Panels.Tabs.YahooStockPriceChartsTab"
+             Title="Stock charts">
+    <ContentPage.BindingContext>
+            <local:YahooStockPriceViewModel />
+        </ContentPage.BindingContext>
+    <StackLayout>
+        <Label Text="Yahoo scrapping" FontSize="Large" HorizontalOptions="Center" Margin="0,0,0,20"/>
+        <Picker x:Name="companyComboBox" SelectedItem="{Binding SelectedCompany}" ItemsSource="{Binding CompanyShortcuts}"/>
+        <DatePicker x:Name="dpEndDateRange" MinimumDate="01/12/1980" MaximumDate="{Binding CurrentDate}"/>
+        <DatePicker x:Name="dpStartDateRange" MinimumDate="01/12/1980" MaximumDate="{Binding CurrentDate}"/>
+        <Button Text="Scrap" Clicked="ScrapButton_Clicked"/>
+        <Grid>
+            <lvc:CartesianChart x:Name="candlestickChart" HeightRequest="600" WidthRequest="1200" Series="{Binding Series}" XAxes="{Binding XAxsis}" ZoomMode="Both"/>
+        </Grid>
+    </StackLayout>
+</ContentPage>

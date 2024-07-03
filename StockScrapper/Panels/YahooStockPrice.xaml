@@ -1,41 +1,27 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+<TabbedPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Maui;assembly=LiveChartsCore.SkiaSharpView.Maui"
              xmlns:lvcore="clr-namespace:LiveChartsCore;assembly=LiveChartsCore"
              xmlns:local="clr-namespace:StockScrapper.Panels"
-             x:Class="StockScrapper.Panels.YahooStockPrice"
-             Title="NBPExchangeRate">
+             x:Class="StockScrapper.Panels.YahooStockPrice">
 
-    <ContentPage.BindingContext>
-        <local:YahooStockPriceViewModel />
-    </ContentPage.BindingContext>
+    <ContentPage Title="Currency List">
+        <ListView x:Name="currencyListView" ItemsSource="{Binding CurrencyList}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <StackLayout>
+                            <Label Text="{Binding CurrencyCode}" FontSize="Medium"/>
+                            <Label Text="{Binding ExchangeRate}" FontSize="Small" TextColor="Gray"/>
+                        </StackLayout>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </ContentPage>
 
-    <StackLayout>
-        <!--<ListView x:Name="currencyListView" ItemsSource="{Binding CurrencyList}">
-    <ListView.ItemTemplate>
-        
-        <DataTemplate>
-            <ViewCell>
-                <StackLayout>
-                    <Label Text="{Binding CurrencyCode}" FontSize="Medium"/>
-                    <Label Text="{Binding ExchangeRate}" FontSize="Small" TextColor="Gray"/>
-                </StackLayout>
-            </ViewCell>
-        </DataTemplate>
-        
-    </ListView.ItemTemplate>
-</ListView>-->
-        <Label Text="Yahoo scrapping" FontSize="Large" HorizontalOptions="Center" Margin="0,0,0,20"/>
-
-        <Picker x:Name="companyComboBox" SelectedItem="{Binding SelectedCompany}" ItemsSource="{Binding CompanyShortcuts}"/>
-
-        <DatePicker x:Name="dpEndDateRange" MinimumDate="01/12/1980" MaximumDate="{Binding CurrentDate}"/>
-        <DatePicker x:Name="dpStartDateRange" MinimumDate="01/12/1980" MaximumDate="{Binding CurrentDate}"/>
-
-        <Button Text="Scrap" Clicked="ScrapButton_Clicked" />
-
-        <lvc:CartesianChart x:Name="candlestickChart" HeightRequest="400" WidthRequest="1200" Series="{Binding Series}" XAxes="{Binding XAxsis}" ZoomMode="Both"/>
-    </StackLayout>
-</ContentPage>
+    <local:YahooStockPriceChartTab/>
+    
+</TabbedPage>
         

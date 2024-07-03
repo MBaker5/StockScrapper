@@ -2,11 +2,56 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="StockScrapper.Panels.CurrencyStockPrice"
-             Title="NewPage1">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="Currency">
+    
+    <ContentPage.Resources>
+        <Style x:Key="HeaderLabelStyle" TargetType="Label">
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="BackgroundColor" Value="LightGray" />
+            <Setter Property="Padding" Value="10" />
+            <Setter Property="HorizontalTextAlignment" Value="Center" />
+            <Setter Property="VerticalTextAlignment" Value="Center" />
+        </Style>
+        <Style x:Key="CurrencyCodeStyle" TargetType="Label">
+            <Setter Property="BackgroundColor" Value="LightBlue" />
+            <Setter Property="Padding" Value="10" />
+        </Style>
+        <Style x:Key="ExchangeRateStyle" TargetType="Label">
+            <Setter Property="Padding" Value="10" />
+        </Style>
+        <Style TargetType="Grid">
+            <Setter Property="RowSpacing" Value="0" />
+            <Setter Property="ColumnSpacing" Value="0" />
+        </Style>
+    </ContentPage.Resources>
+
+    <StackLayout>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Label Text="Currency Code" Style="{StaticResource HeaderLabelStyle}" Grid.Column="0" />
+            <Label Text="Exchange Rate" Style="{StaticResource HeaderLabelStyle}" Grid.Column="1" />
+        </Grid>
+
+        <ListView x:Name="CurrencyListView" HasUnevenRows="True">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ViewCell>
+                        <Grid Margin="25">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <BoxView Grid.Column="0" BackgroundColor="Black" HeightRequest="1" HorizontalOptions="Center" VerticalOptions="End"  />
+                            <Label Text="{Binding CurrencyCode}" Style="{StaticResource CurrencyCodeStyle}" Grid.Column="0" />
+                            <Label Text="{Binding ExchangeRate}" Style="{StaticResource ExchangeRateStyle}" Grid.Column="1" />
+                        </Grid>
+                    </ViewCell>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </StackLayout>
 </ContentPage>

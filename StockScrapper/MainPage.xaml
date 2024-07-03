@@ -9,6 +9,18 @@
         </MenuBarItem>
     </ContentPage.MenuBarItems>
 
-    <Button Text="Yahoo" Clicked="btnYahooScrapp_Clicked"/>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Button Text="Stock charts" Grid.Row="0" Margin="20" Clicked="btnYahooScrapp_Clicked"/>
+        <Button Text="Currency data" Grid.Row="1" Grid.Column="1" Margin="20" Clicked="btnCurrencyData_Clicked"/>
+    </Grid>
+    
 </ContentPage>
 
