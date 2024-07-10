@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<TabbedPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Maui;assembly=LiveChartsCore.SkiaSharpView.Maui"
-             xmlns:lvcore="clr-namespace:LiveChartsCore;assembly=LiveChartsCore"
-             xmlns:local="clr-namespace:StockScrapper.Panels"
-             x:Class="StockScrapper.Panels.YahooStockPrice">
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+            xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Maui;assembly=LiveChartsCore.SkiaSharpView.Maui"
+            xmlns:lvcore="clr-namespace:LiveChartsCore;assembly=LiveChartsCore"
+            xmlns:local="clr-namespace:StockScrapper.Panels"
+            xmlns:tab="clr-namespace:StockScrapper.Panels.Tabs"
+            x:Class="StockScrapper.Panels.YahooStockPrice">
 
-    <ContentPage Title="Currency List">
+    <!--<ContentPage Title="Currency List">
         <ListView x:Name="currencyListView" ItemsSource="{Binding CurrencyList}">
             <ListView.ItemTemplate>
                 <DataTemplate>
@@ -19,9 +20,8 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
-    </ContentPage>
+    </ContentPage>-->
 
-    <local:YahooStockPriceChartTab/>
-    
-</TabbedPage>
-        
+    <!--<tab:YahooStockPriceChartsTab Title="Charts"/>-->
+
+</ContentPage>

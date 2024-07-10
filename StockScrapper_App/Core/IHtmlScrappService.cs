@@ -10,6 +10,7 @@ namespace StockScrapper_App.Core
 	public interface IHtmlScrappService
 	{
 		List<CurrencyModel> GetDataFromNBP();
+		List<string> GetMostActiveOnMarket();
 		List<StockData> ScrapYahoo(string companyShortcut);
 
     }

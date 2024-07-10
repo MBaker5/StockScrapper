@@ -23,11 +23,25 @@ namespace StockScrapper.Panels
 		private readonly IHtmlScrappService _scrapp;
 
 		public ObservableCollection<StockData> StockDataList { get; set; } = new ObservableCollection<StockData>();
-		public CompanyShortcutEnum SelectedCompany { get; set; }
-		public CompanyShortcutEnum[] CompanyShortcuts => (CompanyShortcutEnum[])Enum.GetValues(typeof(CompanyShortcutEnum));
+		public string SelectedCompany { get; set; }
+		//public CompanyShortcutEnum[] CompanyShortcuts => (CompanyShortcutEnum[])Enum.GetValues(typeof(CompanyShortcutEnum));
 		private DateTime _minDate = DateTime.MinValue;
 		private DateTime _maxDate = DateTime.MaxValue;
 		private List<string> dateLabelers = new List<string>();
+
+		private List<string> _companyShortcuts;
+		public List<string> CompanyShortcuts
+		{
+			get => _companyShortcuts;
+			set
+			{
+				if (_companyShortcuts != value)
+				{
+					_companyShortcuts = value;
+					OnPropertyChanged(nameof(CompanyShortcuts));
+				}
+			}
+		}
 
 		private ISeries[] _series;
 		public ISeries[] Series
@@ -91,6 +105,13 @@ namespace StockScrapper.Panels
 			_scrapp = new HtmlScrappService();
 			_currentDate = DateTime.Now;
 			ScrapCommand = new Command(Scrap);
+			LoadShortcuts();
+		}
+
+		private void LoadShortcuts()
+		{
+			_companyShortcuts = _scrapp.GetMostActiveOnMarket();
+			//_companyShortcuts = xd;
 		}
 
 		private void Scrap()

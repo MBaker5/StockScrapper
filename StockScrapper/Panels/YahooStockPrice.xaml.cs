@@ -2,7 +2,7 @@ using Microsoft.Maui.Controls;
 
 namespace StockScrapper.Panels;
 
-public partial class YahooStockPrice : TabbedPage
+public partial class YahooStockPrice : ContentPage
 {
 	private readonly YahooStockPriceViewModel _viewModel;
 
@@ -11,7 +11,7 @@ public partial class YahooStockPrice : TabbedPage
 		InitializeComponent();
 		_viewModel = new YahooStockPriceViewModel();
 		BindingContext = _viewModel;
-		
+
 	}
 
 	private void ScrapButton_Clicked(object sender, EventArgs e)

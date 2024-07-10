@@ -1,4 +1,4 @@
-namespace StockScrapper.Panels;
+namespace StockScrapper.Panels.Tabs;
 
 public partial class YahooStockPriceChartsTab : ContentPage
 {

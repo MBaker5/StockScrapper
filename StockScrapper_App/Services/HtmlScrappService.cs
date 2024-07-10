@@ -7,42 +7,53 @@ namespace StockScrapper_App.Services
 {
     public class HtmlScrappService : IHtmlScrappService
     {
-		public async Task<List<string>> GetMostActiveOnMarketAsync()
+		public List<string> GetMostActiveOnMarket()
 		{
-			string url = "https://finance.yahoo.com/most-active/?offset=25&count=25";
+			string url = "https://finance.yahoo.com/most-active/?offset=0&count=50";
+			HtmlWeb web = new HtmlWeb();
+			List<string> companyShortcuts = new List<string>();
+			int maxRetries = 3;
 
-			var httpClient = new HttpClient();
-			var symbols = new List<string>();
+			Stopwatch stopwatch = new Stopwatch();
+			stopwatch.Start();
 
-			try
+			for (int attempt = 0; attempt < maxRetries; attempt++)
 			{
-				var html = await httpClient.GetStringAsync(url);
-
-				var htmlDoc = new HtmlDocument();
-				htmlDoc.LoadHtml(html);
-
-				var nodes = htmlDoc.DocumentNode.SelectNodes("//tr[@class='simpTblRow Bgc($hoverBgColor):h BdB Bdbc($seperatorColor) Bdbc($tableBorderBlue):h H(32px) Bgc($lv2BgColor) ']//td[@aria-label='Symbol']//a");
-
-				if (nodes != null)
+				try
 				{
-					foreach (var node in nodes)
+					HtmlDocument doc = web.Load(url);
+
+					string rowSelector = "//tr[contains(@class, 'simpTblRow')]//td[@aria-label='Symbol']";
+
+					HtmlNodeCollection? rowNodes = doc.DocumentNode.SelectNodes(rowSelector);
+
+					if (rowNodes != null)
 					{
-						var symbol = node.InnerText;
-						symbols.Add(symbol);
+						foreach (var rowNode in rowNodes)
+						{
+							string companyShortcut = rowNode.InnerText.Trim();
+							companyShortcuts.Add(companyShortcut);
+						}
+
+						stopwatch.Stop();
+						Console.WriteLine($"Operation completed in: {stopwatch.ElapsedMilliseconds} ms");
+						return companyShortcuts;
+					}
+					else
+					{
+						throw new InvalidOperationException("No company shortcuts found!");
 					}
 				}
-				else
+				catch (Exception ex)
 				{
-					throw new InvalidOperationException("No symbols found!");
+					Console.WriteLine($"Attempt {attempt + 1} failed: {ex.Message}. Retrying...");
 				}
 			}
-			catch (Exception ex)
-			{
-				Console.WriteLine($"An error occurred: {ex.Message}");
-			}
 
-			return symbols;
+			Console.WriteLine("Failed to fetch data after multiple attempts.");
+			return null;
 		}
+
 
 		public List<CurrencyModel> GetDataFromNBP()
 		{

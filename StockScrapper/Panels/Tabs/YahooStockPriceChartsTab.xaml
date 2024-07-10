@@ -6,15 +6,25 @@
              xmlns:local="clr-namespace:StockScrapper.Panels"
              x:Class="StockScrapper.Panels.Tabs.YahooStockPriceChartsTab"
              Title="Stock charts">
+    
     <ContentPage.BindingContext>
-            <local:YahooStockPriceViewModel />
-        </ContentPage.BindingContext>
-    <StackLayout>
+        <local:YahooStockPriceViewModel />
+    </ContentPage.BindingContext>
+    
+    <StackLayout Margin="20">
         <Label Text="Yahoo scrapping" FontSize="Large" HorizontalOptions="Center" Margin="0,0,0,20"/>
         <Picker x:Name="companyComboBox" SelectedItem="{Binding SelectedCompany}" ItemsSource="{Binding CompanyShortcuts}"/>
-        <DatePicker x:Name="dpEndDateRange" MinimumDate="01/12/1980" MaximumDate="{Binding CurrentDate}"/>
-        <DatePicker x:Name="dpStartDateRange" MinimumDate="01/12/1980" MaximumDate="{Binding CurrentDate}"/>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <DatePicker x:Name="dpEndDateRange" Grid.Column="0" MinimumDate="01/12/1980" MaximumDate="{Binding CurrentDate}"/>
+            <DatePicker x:Name="dpStartDateRange" Grid.Column="1" MinimumDate="01/12/1980" MaximumDate="{Binding CurrentDate}"/>
+        </Grid>
+        
         <Button Text="Scrap" Clicked="ScrapButton_Clicked"/>
+        
         <Grid>
             <lvc:CartesianChart x:Name="candlestickChart" HeightRequest="600" WidthRequest="1200" Series="{Binding Series}" XAxes="{Binding XAxsis}" ZoomMode="Both"/>
         </Grid>
