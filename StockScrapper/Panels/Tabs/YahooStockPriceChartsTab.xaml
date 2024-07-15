@@ -19,8 +19,8 @@
                 <ColumnDefinition/>
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <DatePicker x:Name="dpEndDateRange" Grid.Column="0" MinimumDate="01/12/1980" MaximumDate="{Binding CurrentDate}"/>
-            <DatePicker x:Name="dpStartDateRange" Grid.Column="1" MinimumDate="01/12/1980" MaximumDate="{Binding CurrentDate}"/>
+            <DatePicker x:Name="dpEndDateRange" Grid.Column="0" MinimumDate="01/12/1980" MaximumDate="{Binding CurrentDate}" Date="{Binding StartDate}"/>
+            <DatePicker x:Name="dpStartDateRange" Grid.Column="1" MinimumDate="01/12/1980" MaximumDate="{Binding CurrentDate}" Date="{Binding EndDate}"/>
         </Grid>
         
         <Button Text="Scrap" Clicked="ScrapButton_Clicked"/>

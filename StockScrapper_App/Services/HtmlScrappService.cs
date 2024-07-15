@@ -1,6 +1,7 @@
 ﻿using HtmlAgilityPack;
 using StockScrapper_App.Core;
 using StockScrapper_Database.Models;
+using System;
 using System.Diagnostics;
 
 namespace StockScrapper_App.Services
@@ -104,14 +105,14 @@ namespace StockScrapper_App.Services
 		}
 
 
-		public List<StockData> ScrapYahoo(string companyShortcut)
+		public List<StockData> ScrapYahoo(string url)
         {
             List<StockData> stockDataList = new List<StockData>();
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Start();
 
-            string url = $"https://finance.yahoo.com/quote/{companyShortcut}/history";
+            //string url = $"https://finance.yahoo.com/quote/{companyShortcut}/history";
             HtmlWeb web = new HtmlWeb();
             HtmlDocument doc = web.Load(url);
 
@@ -169,12 +170,15 @@ namespace StockScrapper_App.Services
             return stockDataList;
         }
 
-		static string ConstructUrl(DateTime startDate, DateTime endDate)
+		public string ConstructUrl(string companyShortcut, DateTime startDate, DateTime endDate)
 		{
 			long period1 = (long)(startDate.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
 			long period2 = (long)(endDate.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+			DateTimeOffset dateTimeOffset = new DateTimeOffset(startDate);
+			DateTimeOffset dateTimeOffset1 = new DateTimeOffset(endDate);
 
-			return $"https://finance.yahoo.com/quote/AAPL/history?period1={period1}&period2={period2}&interval=1d&filter=history&frequency=1d&includeAdjustedClose=true";
+
+			return $"https://finance.yahoo.com/quote/{companyShortcut}/history?period1={period1}&period2={period2}";
 		}
 	}
 }

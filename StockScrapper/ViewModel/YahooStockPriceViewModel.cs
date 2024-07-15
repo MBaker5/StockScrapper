@@ -98,6 +98,34 @@ namespace StockScrapper.Panels
 			}
 		}
 
+		private DateTime _startDate;
+		public DateTime StartDate
+		{
+			get => _startDate;
+			set
+			{
+				if (_startDate != value)
+				{
+					_startDate = value;
+					OnPropertyChanged(nameof(StartDate));
+				}
+			}
+		}
+
+		private DateTime _endDate;
+		public DateTime EndDate
+		{
+			get => _endDate;
+			set
+			{
+				if (_endDate != value)
+				{
+					_endDate = value;
+					OnPropertyChanged(nameof(EndDate));
+				}
+			}
+		}
+
 		public ICommand ScrapCommand { get; }
 
 		public YahooStockPriceViewModel()
@@ -105,6 +133,9 @@ namespace StockScrapper.Panels
 			_scrapp = new HtmlScrappService();
 			_currentDate = DateTime.Now;
 			ScrapCommand = new Command(Scrap);
+
+			EndDate = DateTime.Now;
+			StartDate = DateTime.Now;
 			LoadShortcuts();
 		}
 
@@ -118,7 +149,8 @@ namespace StockScrapper.Panels
 		{
 			StockDataList.Clear();
 			string companyShortcut = SelectedCompany.ToString();
-			var stockList = _scrapp.ScrapYahoo(companyShortcut);
+			var url = _scrapp.ConstructUrl(companyShortcut, StartDate, EndDate);
+			var stockList = _scrapp.ScrapYahoo(url);
 			var entries = new List<FinancialPoint>();
 
 			foreach (var s in stockList)
