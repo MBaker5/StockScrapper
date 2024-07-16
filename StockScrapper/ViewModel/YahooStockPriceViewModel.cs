@@ -142,7 +142,6 @@ namespace StockScrapper.Panels
 		private void LoadShortcuts()
 		{
 			_companyShortcuts = _scrapp.GetMostActiveOnMarket();
-			//_companyShortcuts = xd;
 		}
 
 		private void Scrap()
@@ -189,23 +188,17 @@ namespace StockScrapper.Panels
 			DateTime currentDate = StockDataList.Min(x => x.Date);
 			while (currentDate <= StockDataList.Max(x => x.Date))
 			{
-				// Skip Saturdays and Sundays
 				if (currentDate.DayOfWeek != DayOfWeek.Saturday && currentDate.DayOfWeek != DayOfWeek.Sunday)
 				{
-					// Format the date label
 					dateLabels.Add(currentDate.ToString("yyyy-MM-dd"));
 				}
-
-				// Move to the next day
 				currentDate = currentDate.AddDays(1);
 			}
 
-			Debug.WriteLine("xd");
 			Series = new ISeries[]
 			{
 				new CandlesticksSeries<FinancialPoint>
 				{
-
 					UpFill = new SolidColorPaint(SKColors.Blue),
 					UpStroke = new SolidColorPaint(SKColors.CornflowerBlue) { StrokeThickness = 0 },
 					DownFill = new SolidColorPaint(SKColors.Red),

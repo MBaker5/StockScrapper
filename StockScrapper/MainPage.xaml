@@ -18,9 +18,19 @@
             <ColumnDefinition/>
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
+
         <Button Text="Stock charts" Grid.Row="0" Margin="20" Clicked="btnYahooScrapp_Clicked"/>
         <Button Text="Currency data" Grid.Row="1" Grid.Column="1" Margin="20" Clicked="btnCurrencyData_Clicked"/>
-    </Grid>
-    
-</ContentPage>
 
+        <ActivityIndicator x:Name="activityIndicator" 
+                           IsVisible="{Binding IsBusy}" 
+                           IsRunning="{Binding IsBusy}" 
+                           VerticalOptions="Center" 
+                           HorizontalOptions="Center"
+                           Color="Black"
+                           Grid.RowSpan="2"
+                           Grid.ColumnSpan="2"/>
+
+    </Grid>
+
+</ContentPage>
