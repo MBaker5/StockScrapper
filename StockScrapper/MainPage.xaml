@@ -8,29 +8,38 @@
             <MenuFlyoutItem Text="Yahoo" Clicked="NBPExchangeRate_Clicked"/>
         </MenuBarItem>
     </ContentPage.MenuBarItems>
-
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition/>
-            <ColumnDefinition/>
-        </Grid.ColumnDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
 
-        <Button Text="Stock charts" Grid.Row="0" Margin="20" Clicked="btnYahooScrapp_Clicked"/>
-        <Button Text="Currency data" Grid.Row="1" Grid.Column="1" Margin="20" Clicked="btnCurrencyData_Clicked"/>
+            <Button Text="Stock charts" Grid.Row="0" Margin="20" Clicked="btnYahooScrapp_Clicked"/>
+            <Button Text="Currency data" Grid.Row="1" Grid.Column="1" Margin="20" Clicked="btnCurrencyData_Clicked"/>
 
-        <ActivityIndicator x:Name="activityIndicator" 
-                           IsVisible="{Binding IsBusy}" 
-                           IsRunning="{Binding IsBusy}" 
-                           VerticalOptions="Center" 
-                           HorizontalOptions="Center"
-                           Color="Black"
-                           Grid.RowSpan="2"
-                           Grid.ColumnSpan="2"/>
+            
 
+        </Grid>
+        
+       <Grid IsVisible="{Binding IsBusy}" BackgroundColor="#80000000">
+            <BoxView Color="Black" Opacity="0.5" />
+
+            <ActivityIndicator x:Name="activityIndicator" 
+                IsVisible="{Binding IsBusy}" 
+                IsRunning="{Binding IsBusy}" 
+                VerticalOptions="Center" 
+                HorizontalOptions="Center"
+                Color="Black"
+                WidthRequest="300"
+                HeightRequest="300"/>
+        </Grid>
+        
     </Grid>
+    
 
 </ContentPage>

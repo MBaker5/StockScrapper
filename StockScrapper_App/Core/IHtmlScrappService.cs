@@ -11,7 +11,7 @@ namespace StockScrapper_App.Core
 	{
 		List<CurrencyModel> GetDataFromNBP();
 		List<string> GetMostActiveOnMarket();
-		List<StockData> ScrapYahoo(string url);
+		List<StockData> ScrapYahooAsync(string url);
 		string ConstructUrl(string companyShortcut, DateTime startDate, DateTime endDate);
 
 

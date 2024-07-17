@@ -14,6 +14,7 @@ using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace StockScrapper.Panels
@@ -24,10 +25,6 @@ namespace StockScrapper.Panels
 
 		public ObservableCollection<StockData> StockDataList { get; set; } = new ObservableCollection<StockData>();
 		public string SelectedCompany { get; set; }
-		//public CompanyShortcutEnum[] CompanyShortcuts => (CompanyShortcutEnum[])Enum.GetValues(typeof(CompanyShortcutEnum));
-		private DateTime _minDate = DateTime.MinValue;
-		private DateTime _maxDate = DateTime.MaxValue;
-		private List<string> dateLabelers = new List<string>();
 
 		private List<string> _companyShortcuts;
 		public List<string> CompanyShortcuts
@@ -56,10 +53,11 @@ namespace StockScrapper.Panels
 				}
 			}
 		}
+
 		private Axis[] _xaxsis;
-		public Axis[] XAxsis 
-		{  
-			get => _xaxsis; 
+		public Axis[] XAxsis
+		{
+			get => _xaxsis;
 			set
 			{
 				if (_xaxsis != value)
@@ -126,17 +124,55 @@ namespace StockScrapper.Panels
 			}
 		}
 
+		private bool _isBusy;
+		public bool IsBusy
+		{
+			get => _isBusy;
+			set
+			{
+				if (_isBusy != value)
+				{
+					_isBusy = value;
+					OnPropertyChanged();
+				}
+			}
+		}
+
+		private bool _isVisibility;
+		public bool isVisibility
+		{
+			get => _isVisibility;
+			set
+			{
+				if (_isVisibility != value)
+				{
+					_isVisibility = value;
+					OnPropertyChanged();
+				}
+			}
+		}
+
 		public ICommand ScrapCommand { get; }
 
 		public YahooStockPriceViewModel()
 		{
 			_scrapp = new HtmlScrappService();
+
 			_currentDate = DateTime.Now;
-			ScrapCommand = new Command(Scrap);
+			_isVisibility = false;
+
+			ScrapCommand = new Command(async () => await ScrapAsync());
 
 			EndDate = DateTime.Now;
 			StartDate = DateTime.Now;
 			LoadShortcuts();
+		}
+
+		private async Task ActivateIndicatorAsync(bool state)
+		{
+			isVisibility = state;
+			IsBusy = state;
+			await Task.Delay(20);
 		}
 
 		private void LoadShortcuts()
@@ -144,12 +180,14 @@ namespace StockScrapper.Panels
 			_companyShortcuts = _scrapp.GetMostActiveOnMarket();
 		}
 
-		private void Scrap()
+		private async Task ScrapAsync()
 		{
+			await ActivateIndicatorAsync(true);
+
 			StockDataList.Clear();
 			string companyShortcut = SelectedCompany.ToString();
 			var url = _scrapp.ConstructUrl(companyShortcut, StartDate, EndDate);
-			var stockList = _scrapp.ScrapYahoo(url);
+			var stockList = _scrapp.ScrapYahooAsync(url);
 			var entries = new List<FinancialPoint>();
 
 			foreach (var s in stockList)
@@ -165,7 +203,7 @@ namespace StockScrapper.Panels
 					!double.TryParse(s.ClosePrice, NumberStyles.Float, CultureInfo.InvariantCulture, out closePrice) ||
 					!double.TryParse(s.HighPrice, NumberStyles.Float, CultureInfo.InvariantCulture, out highPrice))
 				{
-					Console.WriteLine($"Failed to parse stock data for date {s.Date}");
+					Debug.WriteLine($"Failed to parse stock data for date {s.Date}");
 					continue;
 				}
 
@@ -212,7 +250,6 @@ namespace StockScrapper.Panels
 				new Axis
 				{
 					UnitWidth = TimeSpan.FromDays(1).Ticks,
-					//Labels = dateLabels,
 					LabelsRotation = 60,
 					Labeler = value =>
 					{
@@ -225,7 +262,6 @@ namespace StockScrapper.Panels
 						StrokeThickness = 0.5f,
 						PathEffect = new DashEffect(new float[] { 3, 3 }),
 					},
-					//SubseparatorsPaint = new SolidColorPaint(SKColors.Blue)
 					SeparatorsAtCenter = true,
 					ShowSeparatorLines = true,
 				}
@@ -234,10 +270,12 @@ namespace StockScrapper.Panels
 			{
 				new Axis
 				{
+					UnitWidth = 5,
 					Labeler = Labelers.Currency
 				}
 			};
 
+			await ActivateIndicatorAsync(false);
 		}
 	}
 }

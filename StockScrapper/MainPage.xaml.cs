@@ -66,7 +66,7 @@ namespace StockScrapper
 		private async Task SetBusyStateAsync(bool isBusy)
 		{
 			IsBusy = isBusy;
-			await Task.Delay(100); // Add a small delay to give the UI a chance to update
+			await Task.Delay(20);
 		}
 	}
 }

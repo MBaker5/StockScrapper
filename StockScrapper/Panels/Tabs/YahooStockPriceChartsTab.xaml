@@ -10,23 +10,48 @@
     <ContentPage.BindingContext>
         <local:YahooStockPriceViewModel />
     </ContentPage.BindingContext>
+    <Grid>
+        <StackLayout Margin="20">
+            
+                <Label Text="Yahoo scrapping" FontSize="Large" HorizontalOptions="Center" Margin="0,0,0,20"/>
+                <Picker x:Name="companyComboBox" SelectedItem="{Binding SelectedCompany}" ItemsSource="{Binding CompanyShortcuts}"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <DatePicker x:Name="dpEndDateRange" Grid.Column="0" MinimumDate="01/12/1980" MaximumDate="{Binding CurrentDate}" Date="{Binding StartDate}"/>
+                    <DatePicker x:Name="dpStartDateRange" Grid.Column="1" MinimumDate="01/12/1980" MaximumDate="{Binding CurrentDate}" Date="{Binding EndDate}"/>
+                </Grid>
+
+                <Button Text="Scrap" Clicked="ScrapButton_Clicked"/>
+
+                <Grid>
+                    <lvc:CartesianChart x:Name="candlestickChart" HeightRequest="600" WidthRequest="1200" Series="{Binding Series}" XAxes="{Binding XAxsis}" ZoomMode="Both"/>
+                </Grid>
+            
+
+
+
+
+        </StackLayout>
+        
+        <Grid IsVisible="{Binding isVisibility}" BackgroundColor="#80000000">
+            <BoxView Color="Black" Opacity="0.5" />
+
+            <ActivityIndicator x:Name="activityIndicator" 
+                IsVisible="{Binding IsBusy}" 
+                IsRunning="{Binding IsBusy}" 
+                VerticalOptions="Center" 
+                HorizontalOptions="Center"
+                Color="Black"
+                WidthRequest="300"
+                HeightRequest="300"/>
+            
+        </Grid>
+    </Grid>
     
-    <StackLayout Margin="20">
-        <Label Text="Yahoo scrapping" FontSize="Large" HorizontalOptions="Center" Margin="0,0,0,20"/>
-        <Picker x:Name="companyComboBox" SelectedItem="{Binding SelectedCompany}" ItemsSource="{Binding CompanyShortcuts}"/>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
-            </Grid.ColumnDefinitions>
-            <DatePicker x:Name="dpEndDateRange" Grid.Column="0" MinimumDate="01/12/1980" MaximumDate="{Binding CurrentDate}" Date="{Binding StartDate}"/>
-            <DatePicker x:Name="dpStartDateRange" Grid.Column="1" MinimumDate="01/12/1980" MaximumDate="{Binding CurrentDate}" Date="{Binding EndDate}"/>
-        </Grid>
-        
-        <Button Text="Scrap" Clicked="ScrapButton_Clicked"/>
-        
-        <Grid>
-            <lvc:CartesianChart x:Name="candlestickChart" HeightRequest="600" WidthRequest="1200" Series="{Binding Series}" XAxes="{Binding XAxsis}" ZoomMode="Both"/>
-        </Grid>
-    </StackLayout>
+
+    
+    
 </ContentPage>

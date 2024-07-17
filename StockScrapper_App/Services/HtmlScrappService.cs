@@ -105,7 +105,7 @@ namespace StockScrapper_App.Services
 		}
 
 
-		public List<StockData> ScrapYahoo(string url)
+		public List<StockData> ScrapYahooAsync(string url)
         {
             List<StockData> stockDataList = new List<StockData>();
 
