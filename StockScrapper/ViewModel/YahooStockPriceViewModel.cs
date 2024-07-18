@@ -3,19 +3,16 @@ using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using LiveChartsCore.SkiaSharpView.Painting.Effects;
-using Microsoft.Maui.Controls;
 using SkiaSharp;
 using StockScrapper.Models;
 using StockScrapper_App.Core;
 using StockScrapper_App.Services;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Input;
+using CsvHelper;
+using System.Collections.Generic;
 
 namespace StockScrapper.Panels
 {
@@ -153,6 +150,7 @@ namespace StockScrapper.Panels
 		}
 
 		public ICommand ScrapCommand { get; }
+		public ICommand GenerateCSVCommand { get; }
 
 		public YahooStockPriceViewModel()
 		{
@@ -162,9 +160,11 @@ namespace StockScrapper.Panels
 			_isVisibility = false;
 
 			ScrapCommand = new Command(async () => await ScrapAsync());
+			GenerateCSVCommand = new Command(async () => await ScrapAsync());
 
 			EndDate = DateTime.Now;
 			StartDate = DateTime.Now;
+
 			LoadShortcuts();
 		}
 
@@ -180,102 +180,138 @@ namespace StockScrapper.Panels
 			_companyShortcuts = _scrapp.GetMostActiveOnMarket();
 		}
 
-		private async Task ScrapAsync()
+		private async Task SaveToCsvAsync(string filePath)
 		{
-			await ActivateIndicatorAsync(true);
-
-			StockDataList.Clear();
-			string companyShortcut = SelectedCompany.ToString();
-			var url = _scrapp.ConstructUrl(companyShortcut, StartDate, EndDate);
-			var stockList = _scrapp.ScrapYahooAsync(url);
-			var entries = new List<FinancialPoint>();
-
-			foreach (var s in stockList)
+			try
 			{
-				DateTime dateTime = DateTime.Parse(s.Date);
-				double lowPrice;
-				double openPrice;
-				double closePrice;
-				double highPrice;
-
-				if (!double.TryParse(s.LowPrice, NumberStyles.Float, CultureInfo.InvariantCulture, out lowPrice) ||
-					!double.TryParse(s.OpenPrice, NumberStyles.Float, CultureInfo.InvariantCulture, out openPrice) ||
-					!double.TryParse(s.ClosePrice, NumberStyles.Float, CultureInfo.InvariantCulture, out closePrice) ||
-					!double.TryParse(s.HighPrice, NumberStyles.Float, CultureInfo.InvariantCulture, out highPrice))
+				using (var writer = new StreamWriter(filePath))
+				using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
 				{
-					Debug.WriteLine($"Failed to parse stock data for date {s.Date}");
-					continue;
+					csv.WriteHeader<StockData>();
+					await csv.NextRecordAsync();
+					foreach (var stockData in StockDataList)
+					{
+						csv.WriteRecord(stockData);
+						await csv.NextRecordAsync();
+					}
 				}
-
-				var entry = new FinancialPoint(dateTime, highPrice, openPrice, closePrice, lowPrice);
-				entries.Add(entry);
-
-				StockData stockData = new()
-				{
-					Date = dateTime,
-					LowPrice = lowPrice,
-					OpenPrice = openPrice,
-					ClosePrice = closePrice,
-					HighPrice = highPrice
-				};
-				StockDataList.Add(stockData);
 			}
-
-			List<string> dateLabels = new List<string>();
-
-			DateTime currentDate = StockDataList.Min(x => x.Date);
-			while (currentDate <= StockDataList.Max(x => x.Date))
+			catch (Exception ex)
 			{
-				if (currentDate.DayOfWeek != DayOfWeek.Saturday && currentDate.DayOfWeek != DayOfWeek.Sunday)
-				{
-					dateLabels.Add(currentDate.ToString("yyyy-MM-dd"));
-				}
-				currentDate = currentDate.AddDays(1);
+				Debug.WriteLine($"An error occurred while saving to CSV: {ex.Message}");
 			}
+		}
 
+		public async Task LoadChartAsync(List<FinancialPoint> entries)
+		{
 			Series = new ISeries[]
-			{
-				new CandlesticksSeries<FinancialPoint>
 				{
-					UpFill = new SolidColorPaint(SKColors.Blue),
-					UpStroke = new SolidColorPaint(SKColors.CornflowerBlue) { StrokeThickness = 0 },
-					DownFill = new SolidColorPaint(SKColors.Red),
-					DownStroke = new SolidColorPaint(SKColors.Orange) { StrokeThickness = 0 },
-					Values = entries
-				}
-			};
+					new CandlesticksSeries<FinancialPoint>
+					{
+						UpFill = new SolidColorPaint(SKColors.Blue),
+						UpStroke = new SolidColorPaint(SKColors.CornflowerBlue) { StrokeThickness = 0 },
+						DownFill = new SolidColorPaint(SKColors.Red),
+						DownStroke = new SolidColorPaint(SKColors.Orange) { StrokeThickness = 0 },
+						Values = entries
+					}
+				};
 
 			XAxsis = new Axis[]
 			{
-				new Axis
-				{
-					UnitWidth = TimeSpan.FromDays(1).Ticks,
-					LabelsRotation = 60,
-					Labeler = value =>
+					new Axis
 					{
-						DateTime dateTime = new DateTime((long)value);
-						return dateTime.ToString("dd/M/yyyy");
-					},
-					MinStep = 1,
-					SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray)
-					{
-						StrokeThickness = 0.5f,
-						PathEffect = new DashEffect(new float[] { 3, 3 }),
-					},
-					SeparatorsAtCenter = true,
-					ShowSeparatorLines = true,
-				}
-			};
-			YAxsis = new Axis[]
-			{
-				new Axis
-				{
-					UnitWidth = 5,
-					Labeler = Labelers.Currency
-				}
+						UnitWidth = TimeSpan.FromDays(1).Ticks,
+						LabelsRotation = 60,
+						Labeler = value =>
+						{
+							DateTime dateTime = new DateTime((long)value);
+							return dateTime.ToString("dd/M/yyyy");
+						},
+						MinStep = 1,
+						SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray)
+						{
+							StrokeThickness = 0.5f,
+							PathEffect = new DashEffect(new float[] { 3, 3 }),
+						},
+						SeparatorsAtCenter = true,
+						ShowSeparatorLines = true,
+					}
 			};
 
-			await ActivateIndicatorAsync(false);
+			YAxsis = new Axis[]
+			{
+					new Axis
+					{
+						UnitWidth = 5,
+						Labeler = Labelers.Currency
+					}
+			};
+		}
+
+		private async Task ScrapAsync()
+		{
+			try
+			{
+				await ActivateIndicatorAsync(true);
+
+				StockDataList.Clear();
+				string companyShortcut = SelectedCompany.ToString();
+
+				var url = _scrapp.ConstructUrl(companyShortcut, StartDate, EndDate);
+				var stockList = _scrapp.ScrapYahooAsync(url);
+				var entries = new List<FinancialPoint>();
+
+				foreach (var s in stockList)
+				{
+					DateTime dateTime = DateTime.Parse(s.Date);
+					double lowPrice;
+					double openPrice;
+					double closePrice;
+					double highPrice;
+
+					if (!double.TryParse(s.LowPrice, NumberStyles.Float, CultureInfo.InvariantCulture, out lowPrice) ||
+						!double.TryParse(s.OpenPrice, NumberStyles.Float, CultureInfo.InvariantCulture, out openPrice) ||
+						!double.TryParse(s.ClosePrice, NumberStyles.Float, CultureInfo.InvariantCulture, out closePrice) ||
+						!double.TryParse(s.HighPrice, NumberStyles.Float, CultureInfo.InvariantCulture, out highPrice))
+					{
+						Debug.WriteLine($"Failed to parse stock data for date {s.Date}");
+						continue;
+					}
+
+					var entry = new FinancialPoint(dateTime, highPrice, openPrice, closePrice, lowPrice);
+					entries.Add(entry);
+
+					StockData stockData = new()
+					{
+						Date = dateTime,
+						LowPrice = lowPrice,
+						OpenPrice = openPrice,
+						ClosePrice = closePrice,
+						HighPrice = highPrice
+					};
+					StockDataList.Add(stockData);
+				}
+
+				List<string> dateLabels = new List<string>();
+
+				DateTime currentDate = StockDataList.Min(x => x.Date);
+				while (currentDate <= StockDataList.Max(x => x.Date))
+				{
+					if (currentDate.DayOfWeek != DayOfWeek.Saturday && currentDate.DayOfWeek != DayOfWeek.Sunday)
+					{
+						dateLabels.Add(currentDate.ToString("yyyy-MM-dd"));
+					}
+					currentDate = currentDate.AddDays(1);
+				}
+
+				await LoadChartAsync(entries);
+
+				await ActivateIndicatorAsync(false);
+			}
+			catch
+			{
+
+			}
 		}
 	}
 }

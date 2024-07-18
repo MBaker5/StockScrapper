@@ -18,4 +18,10 @@ public partial class YahooStockPrice : ContentPage
 	{
 		_viewModel.ScrapCommand.Execute(null);
 	}
+
+	private void CSVButton_Clicked(object sender, EventArgs e)
+	{
+		_viewModel.GenerateCSVCommand.Execute(null);
+	}
+	
 }

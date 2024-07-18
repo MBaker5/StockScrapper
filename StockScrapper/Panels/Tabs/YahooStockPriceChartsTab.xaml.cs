@@ -14,4 +14,9 @@ public partial class YahooStockPriceChartsTab : ContentPage
 	{
 		_viewModel.ScrapCommand.Execute(null);
 	}
+
+	private void Button_Clicked(object sender, EventArgs e)
+	{
+
+	}
 }

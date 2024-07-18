@@ -24,7 +24,15 @@
                     <DatePicker x:Name="dpStartDateRange" Grid.Column="1" MinimumDate="01/12/1980" MaximumDate="{Binding CurrentDate}" Date="{Binding EndDate}"/>
                 </Grid>
 
-                <Button Text="Scrap" Clicked="ScrapButton_Clicked"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Button Text="Generate chart" Clicked="ScrapButton_Clicked" Grid.Column="0"/>
+                <Button Text="Scrap nodes to CSV" Clicked="CSVButton_Clicked" Grid.Column="1"/>
+            </Grid>
+                
 
                 <Grid>
                     <lvc:CartesianChart x:Name="candlestickChart" HeightRequest="600" WidthRequest="1200" Series="{Binding Series}" XAxes="{Binding XAxsis}" ZoomMode="Both"/>
