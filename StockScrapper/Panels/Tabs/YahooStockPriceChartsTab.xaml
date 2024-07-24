@@ -13,35 +13,40 @@
     <Grid>
         <StackLayout Margin="20">
             
-                <Label Text="Yahoo scrapping" FontSize="Large" HorizontalOptions="Center" Margin="0,0,0,20"/>
-                <Picker x:Name="companyComboBox" SelectedItem="{Binding SelectedCompany}" ItemsSource="{Binding CompanyShortcuts}"/>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
-                    </Grid.ColumnDefinitions>
-                    <DatePicker x:Name="dpEndDateRange" Grid.Column="0" MinimumDate="01/12/1980" MaximumDate="{Binding CurrentDate}" Date="{Binding StartDate}"/>
-                    <DatePicker x:Name="dpStartDateRange" Grid.Column="1" MinimumDate="01/12/1980" MaximumDate="{Binding CurrentDate}" Date="{Binding EndDate}"/>
-                </Grid>
+            <Label Text="Choose company:" Margin="15,0,0,0"/>
+            
+            <Picker x:Name="companyComboBox" SelectedItem="{Binding SelectedCompany}" ItemsSource="{Binding CompanyShortcuts}" Margin="10,0,0,0"/>
 
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
-                <Button Text="Generate chart" Clicked="ScrapButton_Clicked" Grid.Column="0"/>
-                <Button Text="Scrap nodes to CSV" Clicked="CSVButton_Clicked" Grid.Column="1"/>
-            </Grid>
-                
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
 
-                <Grid>
-                    <lvc:CartesianChart x:Name="candlestickChart" HeightRequest="600" WidthRequest="1200" Series="{Binding Series}" XAxes="{Binding XAxsis}" ZoomMode="Both"/>
+                <Label Grid.Column="0" Grid.Row="0" Text="Choose period of time:" Margin="15,12,0,0"/>
+
+                <Grid Grid.Row="1" Margin="0,0,0,0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <DatePicker x:Name="dpEndDateRange" Grid.Row="1" Grid.Column="0" Margin="10,0,0,0" HorizontalOptions="End" MinimumDate="01/12/1980" MaximumDate="{Binding CurrentDate}" Date="{Binding StartDate}"/>
+                    <DatePicker x:Name="dpStartDateRange" Grid.Row="1" Grid.Column="1" Margin="5,0,0,0" HorizontalOptions="Start" MinimumDate="01/12/1980" MaximumDate="{Binding CurrentDate}" Date="{Binding EndDate}"/>
                 </Grid>
-            
-
-
-
-
+               
+                
+                <Button Text="Generate chart" Margin="15" Clicked="ScrapButton_Clicked" Grid.Column="0" Grid.Row="2"/>
+                <Button Text="Scrap nodes to CSV" Margin="15" Clicked="CSVButton_Clicked" Grid.Column="1" Grid.Row="2"/>
+            </Grid>
+            <Grid>
+                <lvc:CartesianChart x:Name="candlestickChart" HeightRequest="450" WidthRequest="1200" Series="{Binding Series}" XAxes="{Binding XAxsis}" ZoomMode="Both" IsEnabled="{Binding IsChartEnabled}"/>
+            </Grid>
         </StackLayout>
         
         <Grid IsVisible="{Binding isVisibility}" BackgroundColor="#80000000">

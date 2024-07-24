@@ -10,175 +10,205 @@ namespace StockScrapper_App.Services
     {
 		public List<string> GetMostActiveOnMarket()
 		{
-			string url = "https://finance.yahoo.com/most-active/?offset=0&count=50";
-			HtmlWeb web = new HtmlWeb();
-			List<string> companyShortcuts = new List<string>();
-			int maxRetries = 3;
-
-			Stopwatch stopwatch = new Stopwatch();
-			stopwatch.Start();
-
-			for (int attempt = 0; attempt < maxRetries; attempt++)
+			try
 			{
-				try
+				string url = "https://finance.yahoo.com/most-active/?offset=0&count=50";
+				HtmlWeb web = new HtmlWeb();
+				List<string> companyShortcuts = new List<string>();
+				int maxRetries = 3;
+
+				Stopwatch stopwatch = new Stopwatch();
+				stopwatch.Start();
+
+				for (int attempt = 0; attempt < maxRetries; attempt++)
 				{
-					HtmlDocument doc = web.Load(url);
-
-					string rowSelector = "//tr[contains(@class, 'simpTblRow')]//td[@aria-label='Symbol']";
-
-					HtmlNodeCollection? rowNodes = doc.DocumentNode.SelectNodes(rowSelector);
-
-					if (rowNodes != null)
+					try
 					{
-						foreach (var rowNode in rowNodes)
+						HtmlDocument doc = web.Load(url);
+
+						string rowSelector = "//tr[contains(@class, 'simpTblRow')]//td[@aria-label='Symbol']";
+
+						HtmlNodeCollection? rowNodes = doc.DocumentNode.SelectNodes(rowSelector);
+
+						if (rowNodes != null)
 						{
-							string companyShortcut = rowNode.InnerText.Trim();
-							companyShortcuts.Add(companyShortcut);
+							foreach (var rowNode in rowNodes)
+							{
+								string companyShortcut = rowNode.InnerText.Trim();
+								companyShortcuts.Add(companyShortcut);
+							}
+
+							stopwatch.Stop();
+							Debug.WriteLine($"Operation completed in: {stopwatch.ElapsedMilliseconds} ms");
+							return companyShortcuts;
 						}
-
-						stopwatch.Stop();
-						Console.WriteLine($"Operation completed in: {stopwatch.ElapsedMilliseconds} ms");
-						return companyShortcuts;
+						else
+						{
+							throw new InvalidOperationException("No company shortcuts found!");
+						}
 					}
-					else
+					catch (Exception ex)
 					{
-						throw new InvalidOperationException("No company shortcuts found!");
+						Debug.WriteLine($"Attempt {attempt + 1} failed: {ex.Message}. Retrying...");
 					}
 				}
-				catch (Exception ex)
-				{
-					Console.WriteLine($"Attempt {attempt + 1} failed: {ex.Message}. Retrying...");
-				}
-			}
 
-			Console.WriteLine("Failed to fetch data after multiple attempts.");
-			return null;
+				Debug.WriteLine("Failed to fetch data after multiple attempts.");
+				return null;
+			}
+			catch(Exception ex)
+			{
+				return null;
+			}
+			
 		}
 
 
 		public List<CurrencyModel> GetDataFromNBP()
 		{
-			string url = "https://nbp.pl/statystyka-i-sprawozdawczosc/kursy/tabela-a/";
-			HtmlWeb web = new HtmlWeb();
-			List<CurrencyModel> currencyList = new List<CurrencyModel>();
-			int maxRetries = 3;
-
-			Stopwatch stopwatch = new Stopwatch();
-			stopwatch.Start();
-
-			for (int attempt = 0; attempt < maxRetries; attempt++)
+			try
 			{
-				HtmlDocument doc = web.Load(url);
+				string url = "https://nbp.pl/statystyka-i-sprawozdawczosc/kursy/tabela-a/";
+				HtmlWeb web = new HtmlWeb();
+				List<CurrencyModel> currencyList = new List<CurrencyModel>();
+				int maxRetries = 3;
 
-				string tableSelector = "//table[@class='table table-hover table-striped table-bordered']";
-				string rowSelector = "//table[@class='table table-hover table-striped table-bordered']//tbody//tr";
+				Stopwatch stopwatch = new Stopwatch();
+				stopwatch.Start();
 
-				HtmlNode tableNode = doc.DocumentNode.SelectSingleNode(tableSelector);
-				HtmlNodeCollection? rowNodes = tableNode?.SelectNodes(rowSelector);
-
-				if (tableNode != null && rowNodes != null)
+				for (int attempt = 0; attempt < maxRetries; attempt++)
 				{
-					foreach (var rowNode in rowNodes)
+					HtmlDocument doc = web.Load(url);
+
+					string tableSelector = "//table[@class='table table-hover table-striped table-bordered']";
+					string rowSelector = "//table[@class='table table-hover table-striped table-bordered']//tbody//tr";
+
+					HtmlNode tableNode = doc.DocumentNode.SelectSingleNode(tableSelector);
+					HtmlNodeCollection? rowNodes = tableNode?.SelectNodes(rowSelector);
+
+					if (tableNode != null && rowNodes != null)
 					{
-						HtmlNodeCollection cellNodes = rowNode.SelectNodes("td");
-
-						if (cellNodes != null && cellNodes.Count == 3)
+						foreach (var rowNode in rowNodes)
 						{
-							string currencyName = cellNodes[0].InnerText.Trim();
-							string currencyCode = cellNodes[1].InnerText.Trim();
-							string exchangeRate = cellNodes[2].InnerText.Trim();
+							HtmlNodeCollection cellNodes = rowNode.SelectNodes("td");
 
-							currencyList.Add(new CurrencyModel { CurrencyName = currencyName, CurrencyCode = currencyCode, ExchangeRate = exchangeRate });
+							if (cellNodes != null && cellNodes.Count == 3)
+							{
+								string currencyName = cellNodes[0].InnerText.Trim();
+								string currencyCode = cellNodes[1].InnerText.Trim();
+								string exchangeRate = cellNodes[2].InnerText.Trim();
+
+								currencyList.Add(new CurrencyModel { CurrencyName = currencyName, CurrencyCode = currencyCode, ExchangeRate = exchangeRate });
+							}
 						}
+
+						stopwatch.Stop();
+						Debug.WriteLine($"Operation completed in: {stopwatch.ElapsedMilliseconds} ms");
+						return currencyList;
 					}
 
-					stopwatch.Stop();
-					Console.WriteLine($"Operation completed in: {stopwatch.ElapsedMilliseconds} ms");
-					return currencyList;
+					Debug.WriteLine($"Attempt {attempt + 1} failed. Retrying...");
 				}
 
-				Console.WriteLine($"Attempt {attempt + 1} failed. Retrying...");
+				Debug.WriteLine("Failed to fetch data after multiple attempts.");
+				return null;
 			}
-
-			Console.WriteLine("Failed to fetch data after multiple attempts.");
-			return null;
+			catch(Exception ex)
+			{
+				return null;
+			}
+			
 		}
 
 
 		public List<StockData> ScrapYahooAsync(string url)
         {
-            List<StockData> stockDataList = new List<StockData>();
+			try
+			{
+				List<StockData> stockDataList = new List<StockData>();
 
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
+				Stopwatch stopwatch = new Stopwatch();
+				stopwatch.Start();
 
-            //string url = $"https://finance.yahoo.com/quote/{companyShortcut}/history";
-            HtmlWeb web = new HtmlWeb();
-            HtmlDocument doc = web.Load(url);
+				HtmlWeb web = new HtmlWeb();
+				HtmlDocument doc = web.Load(url);
 
-			string dateSelector = "//tr[@class='svelte-ewueuo']/td[1]"; // Selector for date
-			string openSelector = "//tr[@class='svelte-ewueuo']/td[2]"; // Selector for open value
-			string highSelector = "//tr[@class='svelte-ewueuo']/td[3]"; // Selector for high value
-			string lowSelector = "//tr[@class='svelte-ewueuo']/td[4]"; // Selector for low value
-			string closeSelector = "//tr[@class='svelte-ewueuo']/td[5]"; // Selector for close value
+				string dateSelector = "//tr[contains(@class, 'yf-ewueuo')]/td[1]";
+				string openSelector = "//tr[contains(@class, 'yf-ewueuo')]/td[2]";
+				string highSelector = "//tr[contains(@class, 'yf-ewueuo')]/td[3]";
+				string lowSelector = "//tr[contains(@class, 'yf-ewueuo')]/td[4]";
+				string closeSelector = "//tr[contains(@class, 'yf-ewueuo')]/td[5]";
 
 
-			HtmlNodeCollection dateNodes = doc.DocumentNode.SelectNodes(dateSelector);
-            HtmlNodeCollection openNodes = doc.DocumentNode.SelectNodes(openSelector);
-            HtmlNodeCollection highNodes = doc.DocumentNode.SelectNodes(highSelector);
-            HtmlNodeCollection lowNodes = doc.DocumentNode.SelectNodes(lowSelector);
-            HtmlNodeCollection closeNodes = doc.DocumentNode.SelectNodes(closeSelector);
+				HtmlNodeCollection dateNodes = doc.DocumentNode.SelectNodes(dateSelector);
+				HtmlNodeCollection openNodes = doc.DocumentNode.SelectNodes(openSelector);
+				HtmlNodeCollection highNodes = doc.DocumentNode.SelectNodes(highSelector);
+				HtmlNodeCollection lowNodes = doc.DocumentNode.SelectNodes(lowSelector);
+				HtmlNodeCollection closeNodes = doc.DocumentNode.SelectNodes(closeSelector);
 
-            if (dateNodes != null && openNodes != null && highNodes != null && lowNodes != null && closeNodes != null)
-            {
-				// Ensure all collections have the same count, or use the minimum count
-				int minCount = Math.Min(dateNodes.Count, Math.Min(openNodes.Count, Math.Min(highNodes.Count, Math.Min(lowNodes.Count, closeNodes.Count))));
-
-				Console.WriteLine($"dateNodes.Count: {dateNodes.Count}, openNodes.Count: {openNodes.Count}, highNodes.Count: {highNodes.Count}, lowNodes.Count: {lowNodes.Count}, closeNodes.Count: {closeNodes.Count}");
-
-				for (int i = 0; i < minCount; i++)
+				if (dateNodes != null && openNodes != null && highNodes != null && lowNodes != null && closeNodes != null)
 				{
-					string date = dateNodes[i].InnerText.Trim();
-					string open = openNodes[i].InnerText.Trim();
-					string high = highNodes[i].InnerText.Trim();
-					string low = lowNodes[i].InnerText.Trim();
-					string close = closeNodes[i].InnerText.Trim();
+					int minCount = Math.Min(dateNodes.Count, Math.Min(openNodes.Count, Math.Min(highNodes.Count, Math.Min(lowNodes.Count, closeNodes.Count))));
 
-					StockData stock = new StockData
+					Console.WriteLine($"dateNodes.Count: {dateNodes.Count}, openNodes.Count: {openNodes.Count}, highNodes.Count: {highNodes.Count}, lowNodes.Count: {lowNodes.Count}, closeNodes.Count: {closeNodes.Count}");
+
+					for (int i = 0; i < minCount; i++)
 					{
-						Date = date,
-						OpenPrice = open,
-						HighPrice = high,
-						LowPrice = low,
-						ClosePrice = close
-					};
+						string date = dateNodes[i].InnerText.Trim();
+						string open = openNodes[i].InnerText.Trim();
+						string high = highNodes[i].InnerText.Trim();
+						string low = lowNodes[i].InnerText.Trim();
+						string close = closeNodes[i].InnerText.Trim();
 
-					stockDataList.Add(stock);
+						StockData stock = new StockData
+						{
+							Date = date,
+							OpenPrice = open,
+							HighPrice = high,
+							LowPrice = low,
+							ClosePrice = close
+						};
 
-					Console.WriteLine($"Date: {date}, Open: {open}, High: {high}, Low: {low}, Close: {close}");
+						stockDataList.Add(stock);
+
+						Console.WriteLine($"Date: {date}, Open: {open}, High: {high}, Low: {low}, Close: {close}");
+					}
+
+				}
+				else
+				{
+					Console.WriteLine("Data not found or selectors need adjustment.");
 				}
 
+				stopwatch.Stop();
+				Console.WriteLine($"Czas wykonania operacji: {stopwatch.ElapsedMilliseconds} ms");
+
+				return stockDataList;
 			}
-			else
-            {
-                Console.WriteLine("Data not found or selectors need adjustment.");
-            }
-
-            stopwatch.Stop();
-            Console.WriteLine($"Czas wykonania operacji: {stopwatch.ElapsedMilliseconds} ms");
-
-            return stockDataList;
+			catch(Exception ex )
+			{
+				return null;
+			}
+           
         }
 
 		public string ConstructUrl(string companyShortcut, DateTime startDate, DateTime endDate)
 		{
-			long period1 = (long)(startDate.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-			long period2 = (long)(endDate.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-			DateTimeOffset dateTimeOffset = new DateTimeOffset(startDate);
-			DateTimeOffset dateTimeOffset1 = new DateTimeOffset(endDate);
+			try
+			{
+				long period1 = (long)(startDate.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+				long period2 = (long)(endDate.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+				DateTimeOffset dateTimeOffset = new DateTimeOffset(startDate);
+				DateTimeOffset dateTimeOffset1 = new DateTimeOffset(endDate);
 
 
-			return $"https://finance.yahoo.com/quote/{companyShortcut}/history?period1={period1}&period2={period2}";
+				return $"https://finance.yahoo.com/quote/{companyShortcut}/history?period1={period1}&period2={period2}";
+			}
+			catch(Exception ex)
+			{
+				return null;
+			}
+			
 		}
 	}
 }

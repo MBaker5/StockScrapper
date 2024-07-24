@@ -1,3 +1,5 @@
+using LiveChartsCore.SkiaSharpView.Drawing;
+
 namespace StockScrapper.Panels.Tabs;
 
 public partial class YahooStockPriceChartsTab : ContentPage
@@ -7,6 +9,18 @@ public partial class YahooStockPriceChartsTab : ContentPage
 	{
 		InitializeComponent();
 		_viewModel = new YahooStockPriceViewModel();
+
+		if(DeviceInfo.Current.Platform == DevicePlatform.Android)
+		{
+			candlestickChart.WidthRequest = 400;
+			candlestickChart.HeightRequest = 450;
+		}
+		else
+		{
+			candlestickChart.WidthRequest = 1200;
+			candlestickChart.HeightRequest = 400;
+		}
+		candlestickChart.TooltipPosition= LiveChartsCore.Measure.TooltipPosition.Left;
 		BindingContext = _viewModel;
 	}
 
@@ -15,8 +29,8 @@ public partial class YahooStockPriceChartsTab : ContentPage
 		_viewModel.ScrapCommand.Execute(null);
 	}
 
-	private void Button_Clicked(object sender, EventArgs e)
+	private void CSVButton_Clicked(object sender, EventArgs e)
 	{
-
+		_viewModel.GenerateCSVCommand.Execute(null);
 	}
 }

@@ -13,6 +13,10 @@ using System.Globalization;
 using System.Windows.Input;
 using CsvHelper;
 using System.Collections.Generic;
+using CommunityToolkit.Maui.Storage;
+using System.Text;
+using CommunityToolkit.Maui.Alerts;
+using Microsoft.Maui.Controls.PlatformConfiguration;
 
 namespace StockScrapper.Panels
 {
@@ -149,6 +153,20 @@ namespace StockScrapper.Panels
 			}
 		}
 
+		private bool _isChartEnabled;
+		public bool IsChartEnabled
+		{
+			get => _isChartEnabled;
+			set
+			{
+				if (_isChartEnabled != value)
+				{
+					_isChartEnabled = value;
+					OnPropertyChanged();
+				}
+			}
+		}
+
 		public ICommand ScrapCommand { get; }
 		public ICommand GenerateCSVCommand { get; }
 
@@ -160,11 +178,11 @@ namespace StockScrapper.Panels
 			_isVisibility = false;
 
 			ScrapCommand = new Command(async () => await ScrapAsync());
-			GenerateCSVCommand = new Command(async () => await ScrapAsync());
+			GenerateCSVCommand = new Command(async () => await SaveToCsvAsync("scrap.csv"));
 
 			EndDate = DateTime.Now;
 			StartDate = DateTime.Now;
-
+			IsChartEnabled = false;
 			LoadShortcuts();
 		}
 
@@ -180,21 +198,74 @@ namespace StockScrapper.Panels
 			_companyShortcuts = _scrapp.GetMostActiveOnMarket();
 		}
 
+
+		public static string ConvertToCsv(ObservableCollection<StockData> stockDataList)
+		{
+			try
+			{
+				var csv = new StringBuilder();
+				csv.AppendLine("Date,OpenPrice,HighPrice,LowPrice,ClosePrice");
+
+				foreach (var stockData in stockDataList)
+				{
+					csv.AppendLine($"{stockData.Date:yyyy-MM-dd},{stockData.OpenPrice},{stockData.HighPrice},{stockData.LowPrice},{stockData.ClosePrice}");
+				}
+
+				return csv.ToString();
+			}
+			catch (Exception ex) 
+			{
+				return null;
+			}
+		}
+
 		private async Task SaveToCsvAsync(string filePath)
 		{
 			try
 			{
-				using (var writer = new StreamWriter(filePath))
-				using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+				bool isAndroid = DeviceInfo.Current.Platform == DevicePlatform.Android; //Check if its running on android
+				await ActivateIndicatorAsync(true);
+
+				StockDataList.Clear();
+				string companyShortcut = SelectedCompany.ToString();
+				if(companyShortcut != null && (StartDate != null && EndDate != null || StartDate != DateTime.MinValue && EndDate != DateTime.MinValue))
 				{
-					csv.WriteHeader<StockData>();
-					await csv.NextRecordAsync();
-					foreach (var stockData in StockDataList)
+					var url = _scrapp.ConstructUrl(companyShortcut, StartDate, EndDate);
+					var stockList = _scrapp.ScrapYahooAsync(url);
+					var entries = ProcessScrappedData(stockList);
+
+					if (!isAndroid)
 					{
-						csv.WriteRecord(stockData);
-						await csv.NextRecordAsync();
+						
+						filePath = $"C:\\Users\\Administrator\\Desktop\\{filePath}"; // Todo zmienić path
+						using (var writer = new StreamWriter(filePath))
+						using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
+						{
+							csv.WriteHeader<StockData>();
+							await csv.NextRecordAsync();
+							foreach (var stockData in StockDataList)
+							{
+								csv.WriteRecord(stockData);
+								await csv.NextRecordAsync();
+							}
+						}
+					}
+					else
+					{
+						string csvData = ConvertToCsv(StockDataList);
+						using (var stream = new MemoryStream(Encoding.UTF8.GetBytes(csvData)))
+						{
+							string fileName = "StockData.csv";
+							var fileSaver = FileSaver.Default;
+
+							await fileSaver.SaveAsync(filePath, fileName, stream);
+
+							await Toast.Make("File saved successfully!").Show();
+						}
 					}
 				}
+
+				await ActivateIndicatorAsync(false);
 			}
 			catch (Exception ex)
 			{
@@ -202,65 +273,11 @@ namespace StockScrapper.Panels
 			}
 		}
 
-		public async Task LoadChartAsync(List<FinancialPoint> entries)
-		{
-			Series = new ISeries[]
-				{
-					new CandlesticksSeries<FinancialPoint>
-					{
-						UpFill = new SolidColorPaint(SKColors.Blue),
-						UpStroke = new SolidColorPaint(SKColors.CornflowerBlue) { StrokeThickness = 0 },
-						DownFill = new SolidColorPaint(SKColors.Red),
-						DownStroke = new SolidColorPaint(SKColors.Orange) { StrokeThickness = 0 },
-						Values = entries
-					}
-				};
-
-			XAxsis = new Axis[]
-			{
-					new Axis
-					{
-						UnitWidth = TimeSpan.FromDays(1).Ticks,
-						LabelsRotation = 60,
-						Labeler = value =>
-						{
-							DateTime dateTime = new DateTime((long)value);
-							return dateTime.ToString("dd/M/yyyy");
-						},
-						MinStep = 1,
-						SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray)
-						{
-							StrokeThickness = 0.5f,
-							PathEffect = new DashEffect(new float[] { 3, 3 }),
-						},
-						SeparatorsAtCenter = true,
-						ShowSeparatorLines = true,
-					}
-			};
-
-			YAxsis = new Axis[]
-			{
-					new Axis
-					{
-						UnitWidth = 5,
-						Labeler = Labelers.Currency
-					}
-			};
-		}
-
-		private async Task ScrapAsync()
+		public List<FinancialPoint> ProcessScrappedData(List<StockScrapper_Database.Models.StockData> stockList)
 		{
 			try
 			{
-				await ActivateIndicatorAsync(true);
-
-				StockDataList.Clear();
-				string companyShortcut = SelectedCompany.ToString();
-
-				var url = _scrapp.ConstructUrl(companyShortcut, StartDate, EndDate);
-				var stockList = _scrapp.ScrapYahooAsync(url);
 				var entries = new List<FinancialPoint>();
-
 				foreach (var s in stockList)
 				{
 					DateTime dateTime = DateTime.Parse(s.Date);
@@ -292,26 +309,111 @@ namespace StockScrapper.Panels
 					StockDataList.Add(stockData);
 				}
 
-				List<string> dateLabels = new List<string>();
+				return entries;
+			}
+			catch (Exception ex)
+			{
+				return null;
+			}
+			
+		}
 
-				DateTime currentDate = StockDataList.Min(x => x.Date);
-				while (currentDate <= StockDataList.Max(x => x.Date))
-				{
-					if (currentDate.DayOfWeek != DayOfWeek.Saturday && currentDate.DayOfWeek != DayOfWeek.Sunday)
-					{
-						dateLabels.Add(currentDate.ToString("yyyy-MM-dd"));
-					}
-					currentDate = currentDate.AddDays(1);
-				}
+		private async Task ScrapAsync()
+		{
+			try
+			{
+				await ActivateIndicatorAsync(true);
+
+				StockDataList.Clear();
+				string companyShortcut = SelectedCompany.ToString();
+
+				var url = _scrapp.ConstructUrl(companyShortcut, StartDate, EndDate);
+				var stockList = _scrapp.ScrapYahooAsync(url);
+				var entries = ProcessScrappedData(stockList);
 
 				await LoadChartAsync(entries);
-
 				await ActivateIndicatorAsync(false);
+
+				//List<string> dateLabels = new List<string>();
+
+				//DateTime currentDate = StockDataList.Min(x => x.Date);
+				//while (currentDate <= StockDataList.Max(x => x.Date))
+				//{
+				//	if (currentDate.DayOfWeek != DayOfWeek.Saturday && currentDate.DayOfWeek != DayOfWeek.Sunday)
+				//	{
+				//		dateLabels.Add(currentDate.ToString("yyyy-MM-dd"));
+				//	}
+				//	currentDate = currentDate.AddDays(1);
+				//}
+
+
 			}
-			catch
+			catch(Exception ex)
 			{
 
 			}
+		}
+
+		public async Task LoadChartAsync(List<FinancialPoint> entries)
+		{
+			try
+			{
+				Series = new ISeries[]
+				{
+					new CandlesticksSeries<FinancialPoint>
+					{
+						UpFill = new SolidColorPaint(SKColors.Blue),
+						UpStroke = new SolidColorPaint(SKColors.CornflowerBlue) { StrokeThickness = 0 },
+						DownFill = new SolidColorPaint(SKColors.Red),
+						DownStroke = new SolidColorPaint(SKColors.Orange) { StrokeThickness = 0 },
+						Values = entries
+					}
+				};
+
+				XAxsis = new Axis[]
+				{
+					new Axis
+					{
+						UnitWidth = TimeSpan.FromDays(1).Ticks,
+						LabelsRotation = 60,
+						Labeler = value =>
+						{
+							DateTime dateTime = new DateTime((long)value);
+							return dateTime.ToString("dd/M/yyyy");
+						},
+						MinStep = 1,
+						SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray)
+						{
+							StrokeThickness = 0.5f,
+							PathEffect = new DashEffect(new float[] { 3, 3 }),
+						},
+						SeparatorsAtCenter = true,
+						ShowSeparatorLines = true,
+					}
+				};
+
+				YAxsis = new Axis[]
+				{
+					new Axis
+					{
+						UnitWidth = 0.1,
+						ForceStepToMin = true,
+						MinStep = 0.1,
+						ShowSeparatorLines = true,
+						TicksAtCenter = true,
+
+						Labeler = Labelers.Currency
+					}
+				};
+
+				IsChartEnabled = true;
+			}
+			catch (Exception ex)
+			{
+
+			}
+			
+
 		}
 	}
 }

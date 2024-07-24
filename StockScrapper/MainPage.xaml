@@ -36,7 +36,11 @@
                 HorizontalOptions="Center"
                 Color="Black"
                 WidthRequest="300"
-                HeightRequest="300"/>
+                HeightRequest="300">
+                <ActivityIndicator.Shadow>
+                    <Shadow Brush="Black" Offset="20,20" Radius="40" Opacity="0.8"/>
+                </ActivityIndicator.Shadow>
+            </ActivityIndicator>
         </Grid>
         
     </Grid>

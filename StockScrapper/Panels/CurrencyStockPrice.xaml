@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="StockScrapper.Panels.CurrencyStockPrice"
              Title="Currency">
-    
+
     <ContentPage.Resources>
         <Style x:Key="HeaderLabelStyle" TargetType="Label">
             <Setter Property="FontAttributes" Value="Bold" />
@@ -14,40 +14,42 @@
         </Style>
         <Style x:Key="CurrencyCodeStyle" TargetType="Label">
             <Setter Property="BackgroundColor" Value="LightBlue" />
-            <Setter Property="Padding" Value="10" />
+
         </Style>
         <Style x:Key="ExchangeRateStyle" TargetType="Label">
-            <Setter Property="Padding" Value="10" />
+
         </Style>
-        <Style TargetType="Grid">
-            <Setter Property="RowSpacing" Value="0" />
-            <Setter Property="ColumnSpacing" Value="0" />
-        </Style>
+
     </ContentPage.Resources>
 
     <StackLayout>
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
 
-            <Label Text="Currency Code" Style="{StaticResource HeaderLabelStyle}" Grid.Column="0" />
-            <Label Text="Exchange Rate" Style="{StaticResource HeaderLabelStyle}" Grid.Column="1" />
-        </Grid>
+        <Button Text="Export to CSV" Clicked="CSVGenerate_Clicked" Margin="20"/>
 
-        <ListView x:Name="CurrencyListView" HasUnevenRows="True">
+        <ListView x:Name="CurrencyListView" HasUnevenRows="True" Margin="20">
+            <ListView.Header>
+                <Grid>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+
+                    <Label Text="Currency Code" Style="{StaticResource HeaderLabelStyle}" Grid.Column="0" />
+                    <Label Text="Exchange Rate" Style="{StaticResource HeaderLabelStyle}" Grid.Column="1" />
+                </Grid>
+            </ListView.Header>
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <ViewCell>
-                        <Grid Margin="25">
+                        <Grid Margin="5">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <BoxView Grid.Column="0" BackgroundColor="Black" HeightRequest="1" HorizontalOptions="Center" VerticalOptions="End"  />
-                            <Label Text="{Binding CurrencyCode}" Style="{StaticResource CurrencyCodeStyle}" Grid.Column="0" />
-                            <Label Text="{Binding ExchangeRate}" Style="{StaticResource ExchangeRateStyle}" Grid.Column="1" />
+                            <BoxView Grid.Column="0" BackgroundColor="Black" HeightRequest="1" HorizontalOptions="Center"  />
+                            <Label Text="{Binding CurrencyCode}" Style="{StaticResource CurrencyCodeStyle}" Grid.Column="0" HorizontalTextAlignment="Center"/>
+                            <Label Text="{Binding ExchangeRate}" Style="{StaticResource ExchangeRateStyle}" Grid.Column="1" HorizontalTextAlignment="Center"/>
                         </Grid>
                     </ViewCell>
                 </DataTemplate>
