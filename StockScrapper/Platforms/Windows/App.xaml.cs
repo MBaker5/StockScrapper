@@ -1,4 +1,8 @@
-﻿using Microsoft.UI.Xaml;
+﻿using LiveChartsCore.Behaviours.Events;
+using Microsoft.UI;
+using Microsoft.UI.Windowing;
+using Microsoft.UI.Xaml;
+using Windows.Graphics;
 
 // To learn more about WinUI, the WinUI project structure,
 // and more about our project templates, see: http://aka.ms/winui-project-info.
@@ -16,6 +20,21 @@ namespace StockScrapper.WinUI
 		/// </summary>
 		public App()
 		{
+			Microsoft.Maui.Handlers.WindowHandler.Mapper.AppendToMapping(nameof(IWindow), (handler, view) =>
+			{
+#if WINDOWS
+				const int WindowWidth = 1200;
+				const int WindowHeight = 1000;
+				var mauiWindow = handler.VirtualView;
+			var nativeWindow = handler.PlatformView;
+			nativeWindow.Activate();
+			IntPtr windowHandle = WinRT.Interop.WindowNative.GetWindowHandle(nativeWindow);
+			WindowId windowId = Microsoft.UI.Win32Interop.GetWindowIdFromWindow(windowHandle);
+			AppWindow appWindow = Microsoft.UI.Windowing.AppWindow.GetFromWindowId(windowId);
+			appWindow.Resize(new SizeInt32(WindowWidth, WindowHeight));
+#endif
+			});
+
 			this.InitializeComponent();
 		}
 

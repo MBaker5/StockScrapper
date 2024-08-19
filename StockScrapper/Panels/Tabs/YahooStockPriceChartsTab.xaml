@@ -43,9 +43,15 @@
                 
                 <Button Text="Generate chart" Margin="15" Clicked="ScrapButton_Clicked" Grid.Column="0" Grid.Row="2"/>
                 <Button Text="Scrap nodes to CSV" Margin="15" Clicked="CSVButton_Clicked" Grid.Column="1" Grid.Row="2"/>
+                
             </Grid>
             <Grid>
-                <lvc:CartesianChart x:Name="candlestickChart" HeightRequest="450" WidthRequest="1200" Series="{Binding Series}" XAxes="{Binding XAxsis}" ZoomMode="Both" IsEnabled="{Binding IsChartEnabled}"/>
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+                <Button Text="Save as image" Margin="15" Clicked="Button_Clicked" Grid.Row="0"/>
+                <lvc:CartesianChart x:Name="candlestickChart" Grid.Row="1" HeightRequest="950" WidthRequest="800" Series="{Binding Series}" XAxes="{Binding XAxsis}" ZoomMode="Both" IsEnabled="{Binding IsChartEnabled}"/>
             </Grid>
         </StackLayout>
         

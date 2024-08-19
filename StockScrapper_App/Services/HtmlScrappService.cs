@@ -26,7 +26,7 @@ namespace StockScrapper_App.Services
 					{
 						HtmlDocument doc = web.Load(url);
 
-						string rowSelector = "//tr[contains(@class, 'simpTblRow')]//td[@aria-label='Symbol']";
+						string rowSelector = "//tr[contains(@class, 'row')]//td[1]//span[contains(@class, 'symbol')]";
 
 						HtmlNodeCollection? rowNodes = doc.DocumentNode.SelectNodes(rowSelector);
 

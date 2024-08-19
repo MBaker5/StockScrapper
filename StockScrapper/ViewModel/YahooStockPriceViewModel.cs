@@ -17,6 +17,7 @@ using CommunityToolkit.Maui.Storage;
 using System.Text;
 using CommunityToolkit.Maui.Alerts;
 using Microsoft.Maui.Controls.PlatformConfiguration;
+using LiveChartsCore.SkiaSharpView.SKCharts;
 
 namespace StockScrapper.Panels
 {
@@ -213,7 +214,7 @@ namespace StockScrapper.Panels
 
 				return csv.ToString();
 			}
-			catch (Exception ex) 
+			catch (Exception ex)
 			{
 				return null;
 			}
@@ -228,7 +229,7 @@ namespace StockScrapper.Panels
 
 				StockDataList.Clear();
 				string companyShortcut = SelectedCompany.ToString();
-				if(companyShortcut != null && (StartDate != null && EndDate != null || StartDate != DateTime.MinValue && EndDate != DateTime.MinValue))
+				if (companyShortcut != null && (StartDate != null && EndDate != null || StartDate != DateTime.MinValue && EndDate != DateTime.MinValue))
 				{
 					var url = _scrapp.ConstructUrl(companyShortcut, StartDate, EndDate);
 					var stockList = _scrapp.ScrapYahooAsync(url);
@@ -236,7 +237,7 @@ namespace StockScrapper.Panels
 
 					if (!isAndroid)
 					{
-						
+
 						filePath = $"C:\\Users\\Administrator\\Desktop\\{filePath}"; // Todo zmienić path
 						using (var writer = new StreamWriter(filePath))
 						using (var csv = new CsvWriter(writer, CultureInfo.InvariantCulture))
@@ -315,13 +316,15 @@ namespace StockScrapper.Panels
 			{
 				return null;
 			}
-			
+
 		}
 
 		private async Task ScrapAsync()
 		{
 			try
 			{
+				if (SelectedCompany == null)
+					return;
 				await ActivateIndicatorAsync(true);
 
 				StockDataList.Clear();
@@ -331,7 +334,9 @@ namespace StockScrapper.Panels
 				var stockList = _scrapp.ScrapYahooAsync(url);
 				var entries = ProcessScrappedData(stockList);
 
-				await LoadChartAsync(entries);
+				//await LoadChartAsync(entries);
+				await LoadCandlestickChartAsync(entries);
+
 				await ActivateIndicatorAsync(false);
 
 				//List<string> dateLabels = new List<string>();
@@ -348,13 +353,13 @@ namespace StockScrapper.Panels
 
 
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 
 			}
 		}
 
-		public async Task LoadChartAsync(List<FinancialPoint> entries)
+		public async Task LoadCandlestickChartAsync(List<FinancialPoint> entries)
 		{
 			try
 			{
@@ -362,8 +367,8 @@ namespace StockScrapper.Panels
 				{
 					new CandlesticksSeries<FinancialPoint>
 					{
-						UpFill = new SolidColorPaint(SKColors.Blue),
-						UpStroke = new SolidColorPaint(SKColors.CornflowerBlue) { StrokeThickness = 0 },
+						UpFill = new SolidColorPaint(SKColors.ForestGreen),
+						UpStroke = new SolidColorPaint(SKColors.DarkGreen) { StrokeThickness = 0 },
 						DownFill = new SolidColorPaint(SKColors.Red),
 						DownStroke = new SolidColorPaint(SKColors.Orange) { StrokeThickness = 0 },
 						Values = entries
@@ -412,8 +417,71 @@ namespace StockScrapper.Panels
 			{
 
 			}
-			
+
 
 		}
+
+		public class NodeLinePoint
+		{
+			public DateTime Date { get; set; }
+			public double Value { get; set; }
+		}
+
+		
+
+		public async Task LoadChartAsync(List<FinancialPoint> entries)
+		{
+			try
+			{
+				if (entries == null || !entries.Any())
+				{
+					Debug.WriteLine("No data available to load the chart.");
+					return;
+				}
+
+				foreach (var entry in entries)
+				{
+					Debug.WriteLine($"Date: {entry.Date}, Open: {entry.Open}, Close: {entry.Close}, High: {entry.High}, Low: {entry.Low}");
+				}
+
+				List<DateTimePoint> points = new List<DateTimePoint>();
+				foreach (var entry in entries) 
+				{
+					new DateTimePoint(entry.Date, entry.Close);
+				}
+
+				//List<NodeLinePoint> points = new List<NodeLinePoint>();
+				//foreach (FinancialPoint entry in entries)
+				//{
+				//	var nodeLinePoint = new NodeLinePoint
+				//	{
+				//		Date = entry.Date,
+				//		Value = (double)entry.Close
+				//	};
+				//	points.Add(nodeLinePoint);
+				//}
+
+				Series = new ISeries[]
+				{
+					new LineSeries<DateTimePoint>
+					{
+						Values = points,
+						Stroke = new SolidColorPaint(SKColors.Blue) { StrokeThickness = 2 },
+						Fill = new SolidColorPaint(SKColors.Red)
+					}
+				};
+				XAxsis = new Axis[]
+				{
+					new DateTimeAxis(TimeSpan.FromDays(1), date => date.ToString("dd mm yyyy"))
+				};
+
+				IsChartEnabled = true;
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine($"An error occurred while loading the chart: {ex.Message}");
+			}
+		}
+
 	}
 }
