@@ -51,7 +51,7 @@
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
                 <Button Text="Save as image" Margin="15" Clicked="Button_Clicked" Grid.Row="0"/>
-                <lvc:CartesianChart x:Name="candlestickChart" Grid.Row="1" HeightRequest="950" WidthRequest="800" Series="{Binding Series}" XAxes="{Binding XAxsis}" ZoomMode="Both" IsEnabled="{Binding IsChartEnabled}"/>
+                <lvc:CartesianChart x:Name="candlestickChart" Grid.Row="1" HeightRequest="950" WidthRequest="800" Series="{Binding Series}" XAxes="{Binding XAxes}" ZoomMode="Both" IsEnabled="{Binding IsChartEnabled}"/>
             </Grid>
         </StackLayout>
         

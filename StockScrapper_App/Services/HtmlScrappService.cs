@@ -3,6 +3,7 @@ using StockScrapper_App.Core;
 using StockScrapper_Database.Models;
 using System;
 using System.Diagnostics;
+using System.Globalization;
 
 namespace StockScrapper_App.Services
 {
@@ -169,7 +170,15 @@ namespace StockScrapper_App.Services
 							ClosePrice = close
 						};
 
-						stockDataList.Add(stock);
+						double lowCheck = 0;
+						double openCheck = 0;
+						double.TryParse(low, NumberStyles.Float, CultureInfo.InvariantCulture, out lowCheck);
+						double.TryParse(open, NumberStyles.Float, CultureInfo.InvariantCulture, out openCheck);
+						if (lowCheck < openCheck )
+						{
+							stockDataList.Add(stock);
+						}
+						
 
 						Console.WriteLine($"Date: {date}, Open: {open}, High: {high}, Low: {low}, Close: {close}");
 					}

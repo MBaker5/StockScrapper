@@ -57,18 +57,10 @@ namespace StockScrapper.Panels
 		}
 
 		private Axis[] _xaxsis;
-		public Axis[] XAxsis
-		{
-			get => _xaxsis;
-			set
-			{
-				if (_xaxsis != value)
-				{
-					_xaxsis = value;
-					OnPropertyChanged(nameof(XAxsis));
-				}
-			}
-		}
+		public Axis[] XAxes { get; set; } =
+	{
+		new DateTimeAxis(TimeSpan.FromDays(1), date => date.ToString("dd/MM"))
+	};
 
 		private Axis[] _yaxsis;
 		public Axis[] YAxsis
@@ -373,16 +365,16 @@ namespace StockScrapper.Panels
 						DownStroke = new SolidColorPaint(SKColors.DarkRed) { StrokeThickness = 0 },
 						DataLabelsPadding = new LiveChartsCore.Drawing.Padding
 						{
-							Left = 1f,  // Increase padding for more space
-							Right = 1f  // Increase padding for more space
+							Left = 3f,  // Increase padding for more space
+							Right = 3f  // Increase padding for more space
 						},
-						MaxBarWidth = 8.5,
+						MaxBarWidth = 7.5,
 						Values = entries
 					}
 				};
 
-				
-				XAxsis = new Axis[]
+
+				XAxes = new Axis[]
 				{
 					new Axis
 					{
@@ -478,10 +470,10 @@ namespace StockScrapper.Panels
 						Fill = new SolidColorPaint(SKColors.Red)
 					}
 				};
-				XAxsis = new Axis[]
-				{
-					new DateTimeAxis(TimeSpan.FromDays(1), date => date.ToString("dd mm yyyy"))
-				};
+				//XAxsis = new Axis[]
+				//{
+				//	new DateTimeAxis(TimeSpan.FromDays(1), date => date.ToString("dd mm yyyy"))
+				//};
 
 				IsChartEnabled = true;
 			}
