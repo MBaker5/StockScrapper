@@ -19,7 +19,7 @@ public partial class YahooStockPriceChartsTab : ContentPage
 		}
 		else
 		{
-			candlestickChart.WidthRequest = 1000;
+			candlestickChart.WidthRequest = 1100;
 			candlestickChart.HeightRequest = 600;
 		}
 		candlestickChart.TooltipPosition= LiveChartsCore.Measure.TooltipPosition.Left;

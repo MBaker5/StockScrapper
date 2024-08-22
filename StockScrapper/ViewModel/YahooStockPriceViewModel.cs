@@ -370,11 +370,18 @@ namespace StockScrapper.Panels
 						UpFill = new SolidColorPaint(SKColors.ForestGreen),
 						UpStroke = new SolidColorPaint(SKColors.DarkGreen) { StrokeThickness = 0 },
 						DownFill = new SolidColorPaint(SKColors.Red),
-						DownStroke = new SolidColorPaint(SKColors.Orange) { StrokeThickness = 0 },
+						DownStroke = new SolidColorPaint(SKColors.DarkRed) { StrokeThickness = 0 },
+						DataLabelsPadding = new LiveChartsCore.Drawing.Padding
+						{
+							Left = 1f,  // Increase padding for more space
+							Right = 1f  // Increase padding for more space
+						},
+						MaxBarWidth = 8.5,
 						Values = entries
 					}
 				};
 
+				
 				XAxsis = new Axis[]
 				{
 					new Axis
@@ -397,15 +404,16 @@ namespace StockScrapper.Panels
 					}
 				};
 
+
 				YAxsis = new Axis[]
 				{
 					new Axis
 					{
-						UnitWidth = 0.1,
+						//UnitWidth = 0.1,
 						ForceStepToMin = true,
-						MinStep = 0.1,
+						//MinStep = 0.1,
 						ShowSeparatorLines = true,
-						TicksAtCenter = true,
+						//TicksAtCenter = true,
 
 						Labeler = Labelers.Currency
 					}
