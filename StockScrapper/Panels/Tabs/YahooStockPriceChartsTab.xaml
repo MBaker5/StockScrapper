@@ -5,7 +5,7 @@
              xmlns:lvcore="clr-namespace:LiveChartsCore;assembly=LiveChartsCore"
              xmlns:local="clr-namespace:StockScrapper.Panels"
              x:Class="StockScrapper.Panels.Tabs.YahooStockPriceChartsTab"
-             Title="Stock charts">
+             Title="Candlestick charts">
     
     <ContentPage.BindingContext>
         <local:YahooStockPriceViewModel />
@@ -41,8 +41,8 @@
                 </Grid>
                
                 
-                <Button Text="Generate chart" Margin="15" Clicked="ScrapButton_Clicked" Grid.Column="0" Grid.Row="2"/>
-                <Button Text="Scrap nodes to CSV" Margin="15" Clicked="CSVButton_Clicked" Grid.Column="1" Grid.Row="2"/>
+                <Button Text="Generate chart" Margin="15" Clicked="ScrapButton_Clicked" Grid.Column="0" Grid.Row="2" Background="DarkGreen"/>
+                <Button Text="Scrap nodes to CSV" Margin="15" Clicked="CSVButton_Clicked" Grid.Column="1" Grid.Row="2" Background="DarkGreen"/>
                 
             </Grid>
             <Grid>
@@ -50,7 +50,7 @@
                     <RowDefinition/>
                     <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
-                <Button Text="Save as image" Margin="15" Clicked="Button_Clicked" Grid.Row="0"/>
+                <Button Text="Save as image" Margin="15" Clicked="Button_Clicked" Grid.Row="0" Background="DarkGreen"/>
                 <lvc:CartesianChart x:Name="candlestickChart" Grid.Row="1" HeightRequest="950" WidthRequest="800" Series="{Binding Series}" XAxes="{Binding XAxes}" ZoomMode="Both" IsEnabled="{Binding IsChartEnabled}"/>
             </Grid>
         </StackLayout>

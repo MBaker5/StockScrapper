@@ -74,51 +74,70 @@ namespace StockScrapper_App.Services
 				List<CurrencyModel> currencyList = new List<CurrencyModel>();
 				int maxRetries = 3;
 
+				List<string> userAgents = new List<string>
+				{
+					"Mozilla/5.0 (Windows NT 10.0; WOW64; Trident/7.0; rv:11.0) like Gecko",
+					"Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:89.0) Gecko/20100101 Firefox/89.0",
+					"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36 Edg/91.0.864.67"
+				};
+
 				Stopwatch stopwatch = new Stopwatch();
 				stopwatch.Start();
 
 				for (int attempt = 0; attempt < maxRetries; attempt++)
 				{
-					HtmlDocument doc = web.Load(url);
+					web.UserAgent = userAgents[attempt % userAgents.Count];
 
-					string tableSelector = "//table[@class='table table-hover table-striped table-bordered']";
-					string rowSelector = "//table[@class='table table-hover table-striped table-bordered']//tbody//tr";
-
-					HtmlNode tableNode = doc.DocumentNode.SelectSingleNode(tableSelector);
-					HtmlNodeCollection? rowNodes = tableNode?.SelectNodes(rowSelector);
-
-					if (tableNode != null && rowNodes != null)
+					try
 					{
-						foreach (var rowNode in rowNodes)
+						HtmlDocument doc = web.Load(url);
+
+						string tableSelector = "//table[@class='table table-hover table-striped table-bordered']";
+						string rowSelector = "//table[@class='table table-hover table-striped table-bordered']//tbody//tr";
+
+						HtmlNode tableNode = doc.DocumentNode.SelectSingleNode(tableSelector);
+						HtmlNodeCollection? rowNodes = tableNode?.SelectNodes(rowSelector);
+
+						if (tableNode != null && rowNodes != null)
 						{
-							HtmlNodeCollection cellNodes = rowNode.SelectNodes("td");
-
-							if (cellNodes != null && cellNodes.Count == 3)
+							foreach (var rowNode in rowNodes)
 							{
-								string currencyName = cellNodes[0].InnerText.Trim();
-								string currencyCode = cellNodes[1].InnerText.Trim();
-								string exchangeRate = cellNodes[2].InnerText.Trim();
+								HtmlNodeCollection cellNodes = rowNode.SelectNodes("td");
 
-								currencyList.Add(new CurrencyModel { CurrencyName = currencyName, CurrencyCode = currencyCode, ExchangeRate = exchangeRate });
+								if (cellNodes != null && cellNodes.Count == 3)
+								{
+									string currencyName = cellNodes[0].InnerText.Trim();
+									string currencyCode = cellNodes[1].InnerText.Trim();
+									string exchangeRate = cellNodes[2].InnerText.Trim();
+
+									currencyList.Add(new CurrencyModel
+									{
+										CurrencyName = currencyName,
+										CurrencyCode = currencyCode,
+										ExchangeRate = exchangeRate
+									});
+								}
 							}
+
+							stopwatch.Stop();
+							Debug.WriteLine($"Operation completed in: {stopwatch.ElapsedMilliseconds} ms");
+							return currencyList;
 						}
-
-						stopwatch.Stop();
-						Debug.WriteLine($"Operation completed in: {stopwatch.ElapsedMilliseconds} ms");
-						return currencyList;
 					}
-
-					Debug.WriteLine($"Attempt {attempt + 1} failed. Retrying...");
+					catch (Exception ex)
+					{
+						Debug.WriteLine($"Exception during attempt {attempt + 1} with User-Agent: {web.UserAgent}. Error: {ex.Message}");
+					}
 				}
 
 				Debug.WriteLine("Failed to fetch data after multiple attempts.");
 				return null;
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
+				Debug.WriteLine($"Final exception occurred: {ex.Message}");
 				return null;
 			}
-			
 		}
 
 
@@ -190,7 +209,7 @@ namespace StockScrapper_App.Services
 				}
 
 				stopwatch.Stop();
-				Console.WriteLine($"Czas wykonania operacji: {stopwatch.ElapsedMilliseconds} ms");
+				Debug.WriteLine($"Czas wykonania operacji: {stopwatch.ElapsedMilliseconds} ms");
 
 				return stockDataList;
 			}

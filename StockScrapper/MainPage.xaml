@@ -4,12 +4,19 @@
              x:Class="StockScrapper.MainPage">
 
     <ContentPage.MenuBarItems>
-        <MenuBarItem Text="Yahoo Scrapp">
+        <MenuBarItem>
             <MenuFlyoutItem Text="Yahoo" Clicked="NBPExchangeRate_Clicked"/>
         </MenuBarItem>
     </ContentPage.MenuBarItems>
     <Grid>
-        <Grid>
+        <StackLayout>
+            <Button Text="Candlestick charts" Grid.Row="0" Margin="30" Clicked="btnYahooScrapp_Clicked" Background="DarkGreen" HeightRequest="100"/>
+            <Button Text="Currency data" Grid.Row="0" Grid.Column="1" Margin="30" Clicked="btnCurrencyData_Clicked" Background="DarkGreen" HeightRequest="100"/>
+            <Button Text="Linear charts" Grid.Row="1" Grid.Column="0" Margin="30" Clicked="btnCurrencyData_Clicked" Background="DarkGreen" HeightRequest="100"/>
+            <Button Text="API" Grid.Row="1" Grid.Column="1" Margin="30" Clicked="btnCurrencyData_Clicked" Background="DarkGreen" HeightRequest="100"/>
+        </StackLayout>
+        
+        <!--<Grid>
             <Grid.RowDefinitions>
                 <RowDefinition/>
                 <RowDefinition/>
@@ -19,12 +26,10 @@
                 <ColumnDefinition/>
             </Grid.ColumnDefinitions>
 
-            <Button Text="Stock charts" Grid.Row="0" Margin="20" Clicked="btnYahooScrapp_Clicked"/>
-            <Button Text="Currency data" Grid.Row="1" Grid.Column="1" Margin="20" Clicked="btnCurrencyData_Clicked"/>
-
             
 
-        </Grid>
+
+        </Grid>-->
         
        <Grid IsVisible="{Binding IsBusy}" BackgroundColor="#80000000">
             <BoxView Color="Black" Opacity="0.5" />
