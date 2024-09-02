@@ -42,17 +42,17 @@ namespace StockScrapper
 			PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 		}
 
-		private async void NBPExchangeRate_Clicked(object sender, EventArgs e)
-		{
-			await SetBusyStateAsync(true);
-			await Navigation.PushAsync(new YahooStockPriceChartsTab());
-			await SetBusyStateAsync(false);
-		}
+		//private async void NBPExchangeRate_Clicked(object sender, EventArgs e)
+		//{
+		//	await SetBusyStateAsync(true);
+		//	await Navigation.PushAsync(new YahooStockPriceChartsTab());
+		//	await SetBusyStateAsync(false);
+		//}
 
 		private async void btnYahooScrapp_Clicked(object sender, EventArgs e)
 		{
 			await SetBusyStateAsync(true);
-			await Navigation.PushAsync(new YahooStockPriceChartsTab());
+			await Navigation.PushAsync(new YahooStockPriceChartsTab(true));
 			await SetBusyStateAsync(false);
 		}
 
@@ -67,6 +67,13 @@ namespace StockScrapper
 		{
 			IsBusy = isBusy;
 			await Task.Delay(20);
+		}
+
+		private async void btnTrendingStocks_Clicked(object sender, EventArgs e)
+		{
+			await SetBusyStateAsync(true);
+			await Navigation.PushAsync(new YahooStockPriceChartsTab(false));
+			await SetBusyStateAsync(false);
 		}
 	}
 }

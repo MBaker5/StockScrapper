@@ -64,7 +64,60 @@ namespace StockScrapper_App.Services
 			
 		}
 
+		public List<string> GetMostTrendingOnMarket()
+		{
+			try
+			{
+				string url = "https://finance.yahoo.com/markets/stocks/trending/";
+				HtmlWeb web = new HtmlWeb();
+				List<string> companyShortcuts = new List<string>();
+				int maxRetries = 3;
 
+				Stopwatch stopwatch = new Stopwatch();
+				stopwatch.Start();
+
+				for (int attempt = 0; attempt < maxRetries; attempt++)
+				{
+					try
+					{
+						HtmlDocument doc = web.Load(url);
+
+						string rowSelector = "//tr[contains(@class, 'row')]//td[1]//span[contains(@class, 'symbol')]";
+
+						HtmlNodeCollection? rowNodes = doc.DocumentNode.SelectNodes(rowSelector);
+
+						if (rowNodes != null)
+						{
+							foreach (var rowNode in rowNodes)
+							{
+								string companyShortcut = rowNode.InnerText.Trim();
+								companyShortcuts.Add(companyShortcut);
+							}
+
+							stopwatch.Stop();
+							Debug.WriteLine($"Operation completed in: {stopwatch.ElapsedMilliseconds} ms");
+							return companyShortcuts;
+						}
+						else
+						{
+							throw new InvalidOperationException("No company shortcuts found!");
+						}
+					}
+					catch (Exception ex)
+					{
+						Debug.WriteLine($"Attempt {attempt + 1} failed: {ex.Message}. Retrying...");
+					}
+				}
+
+				Debug.WriteLine("Failed to fetch data after multiple attempts.");
+				return null;
+			}
+			catch (Exception ex)
+			{
+				return null;
+			}
+
+		}
 		public List<CurrencyModel> GetDataFromNBP()
 		{
 			try

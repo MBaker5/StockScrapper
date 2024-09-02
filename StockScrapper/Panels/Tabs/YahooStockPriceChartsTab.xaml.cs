@@ -7,10 +7,15 @@ namespace StockScrapper.Panels.Tabs;
 public partial class YahooStockPriceChartsTab : ContentPage
 {
 	private readonly YahooStockPriceViewModel _viewModel;
-	public YahooStockPriceChartsTab()
+	private bool _stockType;
+	public YahooStockPriceChartsTab(bool stockType)
 	{
 		InitializeComponent();
+
+		_stockType = stockType;
 		_viewModel = new YahooStockPriceViewModel();
+
+		_viewModel.LoadShortcuts(_stockType);
 
 		if(DeviceInfo.Current.Platform == DevicePlatform.Android)
 		{
@@ -26,6 +31,7 @@ public partial class YahooStockPriceChartsTab : ContentPage
 		BindingContext = _viewModel;
 	}
 
+	
 
 	private async void CreateImageFromCartesianControl()
 	{
@@ -34,14 +40,12 @@ public partial class YahooStockPriceChartsTab : ContentPage
 
 		try
 		{
-			// Create an SKCartesianChart from your existing chart
 			var skChart = new SKCartesianChart(candlestickChart)
 			{
 				Width = (int)candlestickChart.WidthRequest,
 				Height = (int)candlestickChart.HeightRequest,
 			};
 
-			// Convert the chart to an image
 			using (var image = skChart.GetImage())
 			using (var data = image.Encode(SKEncodedImageFormat.Png, 100))
 			{
@@ -82,7 +86,6 @@ public partial class YahooStockPriceChartsTab : ContentPage
 		}
 		catch (Exception ex)
 		{
-			// Handle any errors that may occur
 			await DisplayAlert("Error", $"Failed to save chart image: {ex.Message}", "OK");
 		}
 	}

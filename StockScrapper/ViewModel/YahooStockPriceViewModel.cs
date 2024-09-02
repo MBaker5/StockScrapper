@@ -160,13 +160,14 @@ namespace StockScrapper.Panels
 			}
 		}
 
+		private bool _stockType; // true = mostActive, false = mostTrending
+
 		public ICommand ScrapCommand { get; }
 		public ICommand GenerateCSVCommand { get; }
 
 		public YahooStockPriceViewModel()
 		{
 			_scrapp = new HtmlScrappService();
-
 			_currentDate = DateTime.Now;
 			_isVisibility = false;
 
@@ -176,7 +177,19 @@ namespace StockScrapper.Panels
 			EndDate = DateTime.Now;
 			StartDate = DateTime.Now;
 			IsChartEnabled = false;
-			LoadShortcuts();
+			
+		}
+
+		public void LoadShortcuts(bool stockType)
+		{
+			if (stockType)
+			{
+				_companyShortcuts = _scrapp.GetMostActiveOnMarket();
+			}
+			else
+			{
+				_companyShortcuts = _scrapp.GetMostTrendingOnMarket();
+			}
 		}
 
 		private async Task ActivateIndicatorAsync(bool state)
@@ -186,10 +199,7 @@ namespace StockScrapper.Panels
 			await Task.Delay(20);
 		}
 
-		private void LoadShortcuts()
-		{
-			_companyShortcuts = _scrapp.GetMostActiveOnMarket();
-		}
+		
 
 
 		public static string ConvertToCsv(ObservableCollection<StockData> stockDataList)

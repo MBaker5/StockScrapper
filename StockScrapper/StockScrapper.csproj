@@ -57,6 +57,10 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <None Remove="Resources\Images\backgroundimage.jpg" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui" Version="9.0.2" />
 		<PackageReference Include="CsvHelper" Version="33.0.1" />
 		<PackageReference Include="LiveChartsCore.SkiaSharpView.Maui" Version="2.0.0-rc2" />
@@ -81,9 +85,6 @@
 	  <Compile Update="Panels\Tabs\YahooStockPriceChartsTab.xaml.cs">
 	    <DependentUpon>YahooStockPriceChartsTab.xaml</DependentUpon>
 	  </Compile>
-	  <Compile Update="Panels\YahooStockPrice.xaml.cs">
-	    <DependentUpon>YahooStockPrice.xaml</DependentUpon>
-	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -91,9 +92,6 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Panels\Tabs\YahooStockPriceChartsTab.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Panels\YahooStockPrice.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>
