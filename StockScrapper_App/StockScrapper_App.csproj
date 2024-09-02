@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.11.61" />
+    <PackageReference Include="Remote.Linq.Newtonsoft.Json" Version="7.1.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -12,12 +12,9 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Windows.Input;
 using CsvHelper;
-using System.Collections.Generic;
 using CommunityToolkit.Maui.Storage;
 using System.Text;
 using CommunityToolkit.Maui.Alerts;
-using Microsoft.Maui.Controls.PlatformConfiguration;
-using LiveChartsCore.SkiaSharpView.SKCharts;
 
 namespace StockScrapper.Panels
 {
@@ -27,6 +24,21 @@ namespace StockScrapper.Panels
 
 		public ObservableCollection<StockData> StockDataList { get; set; } = new ObservableCollection<StockData>();
 		public string SelectedCompany { get; set; }
+		public string SelectedChart { get; set; }
+
+		private List<string> _chartTypes;
+		public List<string> ChartTypes
+		{
+			get => _chartTypes;
+			set
+			{
+				if (_chartTypes != value)
+				{
+					_chartTypes = value;
+					OnPropertyChanged(nameof(ChartTypes));
+				}
+			}
+		}
 
 		private List<string> _companyShortcuts;
 		public List<string> CompanyShortcuts
@@ -174,6 +186,12 @@ namespace StockScrapper.Panels
 			ScrapCommand = new Command(async () => await ScrapAsync());
 			GenerateCSVCommand = new Command(async () => await SaveToCsvAsync("scrap.csv"));
 
+			ChartTypes = new List<string>
+			{
+				"Candlestick chart",
+				"Linear chart",
+			};
+
 			EndDate = DateTime.Now;
 			StartDate = DateTime.Now;
 			IsChartEnabled = false;
@@ -226,7 +244,7 @@ namespace StockScrapper.Panels
 		{
 			try
 			{
-				bool isAndroid = DeviceInfo.Current.Platform == DevicePlatform.Android; //Check if its running on android
+				bool isAndroid = DeviceInfo.Current.Platform == DevicePlatform.Android;
 				await ActivateIndicatorAsync(true);
 
 				StockDataList.Clear();
@@ -336,28 +354,33 @@ namespace StockScrapper.Panels
 				var stockList = _scrapp.ScrapYahooAsync(url);
 				var entries = ProcessScrappedData(stockList);
 
-				//await LoadChartAsync(entries);
-				await LoadCandlestickChartAsync(entries);
+				List<string> dateLabels = new List<string>();
+				DateTime currentDate = StockDataList.Min(x => x.Date);
+				while (currentDate <= StockDataList.Max(x => x.Date))
+				{
+					if (currentDate.DayOfWeek != DayOfWeek.Saturday && currentDate.DayOfWeek != DayOfWeek.Sunday)
+					{
+						dateLabels.Add(currentDate.ToString("yyyy-MM-dd"));
+					}
+					currentDate = currentDate.AddDays(1);
+				}
+
+				if (SelectedChart == "Candlestick chart")
+				{
+					await LoadCandlestickChartAsync(entries);
+				}
+				else
+				{
+					await LoadLinearChartAsync(entries);
+				}
+				
 
 				await ActivateIndicatorAsync(false);
-
-				//List<string> dateLabels = new List<string>();
-
-				//DateTime currentDate = StockDataList.Min(x => x.Date);
-				//while (currentDate <= StockDataList.Max(x => x.Date))
-				//{
-				//	if (currentDate.DayOfWeek != DayOfWeek.Saturday && currentDate.DayOfWeek != DayOfWeek.Sunday)
-				//	{
-				//		dateLabels.Add(currentDate.ToString("yyyy-MM-dd"));
-				//	}
-				//	currentDate = currentDate.AddDays(1);
-				//}
-
 
 			}
 			catch (Exception ex)
 			{
-
+				
 			}
 		}
 
@@ -375,14 +398,13 @@ namespace StockScrapper.Panels
 						DownStroke = new SolidColorPaint(SKColors.DarkRed) { StrokeThickness = 0 },
 						DataLabelsPadding = new LiveChartsCore.Drawing.Padding
 						{
-							Left = 3f,  // Increase padding for more space
-							Right = 3f  // Increase padding for more space
+							Left = 3f,
+							Right = 3f 
 						},
 						MaxBarWidth = 7.5,
 						Values = entries
 					}
 				};
-
 
 				XAxes = new Axis[]
 				{
@@ -393,7 +415,7 @@ namespace StockScrapper.Panels
 						Labeler = value =>
 						{
 							DateTime dateTime = new DateTime((long)value);
-							return dateTime.ToString("dd/M/yyyy");
+							return dateTime.ToString("dd/M");
 						},
 						MinStep = 1,
 						SeparatorsPaint = new SolidColorPaint(SKColors.LightSlateGray)
@@ -413,9 +435,7 @@ namespace StockScrapper.Panels
 					{
 						//UnitWidth = 0.1,
 						ForceStepToMin = true,
-						//MinStep = 0.1,
 						ShowSeparatorLines = true,
-						//TicksAtCenter = true,
 
 						Labeler = Labelers.Currency
 					}
@@ -427,8 +447,6 @@ namespace StockScrapper.Panels
 			{
 
 			}
-
-
 		}
 
 		public class NodeLinePoint
@@ -437,9 +455,7 @@ namespace StockScrapper.Panels
 			public double Value { get; set; }
 		}
 
-		
-
-		public async Task LoadChartAsync(List<FinancialPoint> entries)
+		public async Task LoadLinearChartAsync(List<FinancialPoint> entries)
 		{
 			try
 			{
@@ -449,27 +465,16 @@ namespace StockScrapper.Panels
 					return;
 				}
 
-				foreach (var entry in entries)
-				{
-					Debug.WriteLine($"Date: {entry.Date}, Open: {entry.Open}, Close: {entry.Close}, High: {entry.High}, Low: {entry.Low}");
-				}
-
 				List<DateTimePoint> points = new List<DateTimePoint>();
-				foreach (var entry in entries) 
+				foreach (FinancialPoint entry in entries)
 				{
-					new DateTimePoint(entry.Date, entry.Close);
+					var nodeLinePoint = new DateTimePoint
+					{
+						DateTime = entry.Date,
+						Value = (double)entry.Close
+					};
+					points.Add(nodeLinePoint);
 				}
-
-				//List<NodeLinePoint> points = new List<NodeLinePoint>();
-				//foreach (FinancialPoint entry in entries)
-				//{
-				//	var nodeLinePoint = new NodeLinePoint
-				//	{
-				//		Date = entry.Date,
-				//		Value = (double)entry.Close
-				//	};
-				//	points.Add(nodeLinePoint);
-				//}
 
 				Series = new ISeries[]
 				{
@@ -477,13 +482,9 @@ namespace StockScrapper.Panels
 					{
 						Values = points,
 						Stroke = new SolidColorPaint(SKColors.Blue) { StrokeThickness = 2 },
-						Fill = new SolidColorPaint(SKColors.Red)
 					}
 				};
-				//XAxsis = new Axis[]
-				//{
-				//	new DateTimeAxis(TimeSpan.FromDays(1), date => date.ToString("dd mm yyyy"))
-				//};
+				
 
 				IsChartEnabled = true;
 			}

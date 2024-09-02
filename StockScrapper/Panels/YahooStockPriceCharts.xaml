@@ -5,7 +5,7 @@
              xmlns:lvcore="clr-namespace:LiveChartsCore;assembly=LiveChartsCore"
              xmlns:local="clr-namespace:StockScrapper.Panels"
              x:Class="StockScrapper.Panels.Tabs.YahooStockPriceChartsTab"
-             Title="Candlestick charts">
+             Title="Yahoo scraping">
     
     <ContentPage.BindingContext>
         <local:YahooStockPriceViewModel />
@@ -13,10 +13,20 @@
     <Grid>
         <StackLayout Margin="20">
             
-            <Label Text="Choose company:" Margin="15,0,0,0"/>
             
-            <Picker x:Name="companyComboBox" SelectedItem="{Binding SelectedCompany}" ItemsSource="{Binding CompanyShortcuts}" Margin="10,0,0,0"/>
 
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Picker x:Name="companyComboBox" Title="Choose company:" SelectedItem="{Binding SelectedCompany}" ItemsSource="{Binding CompanyShortcuts}" Grid.Column="0" Margin="10,0,0,0"/>
+                <Picker x:Name="chartTypeComboBox" Title="Choose chart type:" SelectedItem="{Binding SelectedChart}" ItemsSource="{Binding ChartTypes}" Grid.Column="1"  Margin="10,0,0,0"/>
+                
+            </Grid>
+            
+            
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
